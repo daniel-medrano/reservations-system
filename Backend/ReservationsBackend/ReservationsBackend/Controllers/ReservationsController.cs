@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query;
+using ReservationsBackend.Models;
 
 namespace ReservationsBackend.Controllers
 {
@@ -14,22 +15,45 @@ namespace ReservationsBackend.Controllers
             _context = context;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Reservation>>> GetAllReservations()
-        {
-            var reservations = await _context.Reservations
-                .Include(c => c.Hotel)
-                .Include(c => c.Client)
-                .Include(c => c.Room)
-                .ToListAsync();
-            return reservations;
+        public async Task<ActionResult<List<Reservation>>> GetAllReservations(string query="", string sortBy="", int page=1, int pageSize=10)
+        { 
+            // Searching
+            var result = _context.Reservations
+                .Include(reservation => reservation.Hotel)
+                .Include(reservation => reservation.Client)
+                .Include(reservation => reservation.Room)
+                .Where(reservation =>
+                    reservation.Room!.RoomType.Name.Contains(query) ||
+                    reservation.Room!.Number.ToString().Contains(query));
+            // Sorting
+            switch (sortBy)
+            {
+                case "-creationDate":
+                    result = result.OrderByDescending(reservation => reservation.CreationDate);
+                    break;
+                case "checkinDate":
+                    result = result.OrderBy(reservation => reservation.CheckInDate);
+                    break;
+                case "checkoutDate":
+                    result = result.OrderBy(reservation => reservation.CheckOutDate);
+                    break;
+                default:
+                    result = result.OrderBy(reservation => reservation.CreationDate);
+                    break;
+            }
+            // Offset pagination.
+            result = result.Skip((page - 1) * pageSize).Take(pageSize);
+
+            var reservations = await result.ToListAsync();
+            return Ok(reservations);
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<Reservation>> GetSingleReservation(int id)
         {
             var reservation = await _context.Reservations
-                .Include(c => c.Hotel)
-                .Include(c => c.Client)
-                .Include(c => c.Room)
+                .Include(reservation => reservation.Hotel)
+                .Include(reservation => reservation.Client)
+                .Include(reservation => reservation.Room)
                 .FirstOrDefaultAsync(reservation => reservation.Id == id);
             if (reservation is null)
                 return NotFound("Reservation not found.");
@@ -42,14 +66,14 @@ namespace ReservationsBackend.Controllers
             await _context.SaveChangesAsync();
             return Ok(reservation);
         }
-        [HttpPut("{id}")]
-        public async Task<ActionResult<List<Reservation>>> UpdateReservation(int id, Reservation updatedReservation)
+        [HttpPut]
+        public async Task<ActionResult<List<Reservation>>> UpdateReservation(Reservation updatedReservation)
         {
             var reservation = await _context.Reservations
-                .Include(c => c.Hotel)
-                .Include(c => c.Client)
-                .Include(c => c.Room)
-                .FirstOrDefaultAsync(reservation => reservation.Id == id);
+                .Include(reservation => reservation.Hotel)
+                .Include(reservation => reservation.Client)
+                .Include(reservation => reservation.Room)
+                .FirstOrDefaultAsync(r => r.Id == updatedReservation.Id);
             if (reservation is null)
                 return NotFound("Reservation not found.");
             reservation.CheckInDate = updatedReservation.CheckInDate;

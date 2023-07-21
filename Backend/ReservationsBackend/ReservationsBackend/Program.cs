@@ -1,15 +1,20 @@
 global using Microsoft.EntityFrameworkCore;
-using ReservationsBackend.Data;
+global using ReservationsBackend.Data;
+global using ReservationsBackend.Models;
+using ReservationsBackend.Services.ReservationsService;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(
+    options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>();
+builder.Services.AddScoped<IReservationsService, ReservationsService>();
 
 var app = builder.Build();
 

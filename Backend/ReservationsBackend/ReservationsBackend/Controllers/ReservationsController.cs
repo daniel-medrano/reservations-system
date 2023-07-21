@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query;
-using ReservationsBackend.Services.ReservationsService;
 
 namespace ReservationsBackend.Controllers
 {

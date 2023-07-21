@@ -1,7 +1,6 @@
 global using Microsoft.EntityFrameworkCore;
 global using ReservationsBackend.Data;
 global using ReservationsBackend.Models;
-using ReservationsBackend.Services.ReservationsService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +13,6 @@ builder.Services.AddControllers().AddNewtonsoftJson(
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>();
-builder.Services.AddScoped<IReservationsService, ReservationsService>();
 
 var app = builder.Build();
 

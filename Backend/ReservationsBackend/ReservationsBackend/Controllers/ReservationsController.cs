@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query;
 using ReservationsBackend.Services.ReservationsService;
 
 namespace ReservationsBackend.Controllers
@@ -8,45 +9,68 @@ namespace ReservationsBackend.Controllers
     [ApiController]
     public class ReservationsController : ControllerBase
     {
-        private readonly IReservationsService _reservationsService;
-        public ReservationsController(IReservationsService reservationsService)
+        private readonly DataContext _context;
+        public ReservationsController(DataContext context)
         {
-            _reservationsService = reservationsService;
+            _context = context;
         }
         [HttpGet]
         public async Task<ActionResult<List<Reservation>>> GetAllReservations()
         {
-            return await _reservationsService.GetAllReservations();
+            var reservations = await _context.Reservations
+                .Include(c => c.Hotel)
+                .Include(c => c.Client)
+                .Include(c => c.Room)
+                .ToListAsync();
+            return reservations;
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<Reservation>> GetSingleReservation(int id)
         {
-            var result = await _reservationsService.GetSingleReservation(id);
-            if (result is null)
+            var reservation = await _context.Reservations
+                .Include(c => c.Hotel)
+                .Include(c => c.Client)
+                .Include(c => c.Room)
+                .FirstOrDefaultAsync(reservation => reservation.Id == id);
+            if (reservation is null)
                 return NotFound("Reservation not found.");
-            return Ok(result);
+            return Ok(reservation);
         }
         [HttpPost]
         public async Task<ActionResult<List<Reservation>>> CreateReservation(Reservation reservation)
         {
-            var result = await _reservationsService.CreateReservation(reservation);
-            return Ok(result);
+            _context.Reservations.Add(reservation);
+            await _context.SaveChangesAsync();
+            return Ok(reservation);
         }
         [HttpPut("{id}")]
         public async Task<ActionResult<List<Reservation>>> UpdateReservation(int id, Reservation updatedReservation)
         {
-            var result = await _reservationsService.UpdateReservation(id, updatedReservation);
-            if (result is null)
+            var reservation = await _context.Reservations
+                .Include(c => c.Hotel)
+                .Include(c => c.Client)
+                .Include(c => c.Room)
+                .FirstOrDefaultAsync(reservation => reservation.Id == id);
+            if (reservation is null)
                 return NotFound("Reservation not found.");
-            return Ok(result);
+            reservation.CheckInDate = updatedReservation.CheckInDate;
+            reservation.CheckOutDate = updatedReservation.CheckOutDate;
+            reservation.AmountAdults = updatedReservation.AmountAdults;
+            reservation.AmountChildren = updatedReservation.AmountChildren;
+            reservation.Notes = updatedReservation.Notes;
+            reservation.Status = updatedReservation.Status;
+            await _context.SaveChangesAsync();
+            return Ok(reservation);
         }
         [HttpDelete("{id}")]
         public async Task<ActionResult<List<Reservation>>> DeleteReservation(int id)
         {
-            var result = await _reservationsService.DeleteReservation(id);
-            if (result is null)
+            var reservation = await _context.Reservations.FindAsync(id);
+            if (reservation is null)
                 return NotFound("Reservation not found.");
-            return Ok(result);
+            _context.Reservations.Remove(reservation);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
     }
 }

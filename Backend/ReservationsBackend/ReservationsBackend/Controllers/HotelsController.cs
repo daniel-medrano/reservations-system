@@ -21,39 +21,24 @@ namespace ReservationsBackend.Controllers
             _context = context;
         }
 
-        // GET: api/Hotels
-        [HttpGet]
-        public async Task<ActionResult<List<Hotel>>> GetHotels()
-        {
-          if (_context.Hotels == null)
-          {
-              return NotFound();
-          }
-            return await _context.Hotels.ToListAsync();
-        }
-
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Hotel>> GetSingleHotel(int id)
         {
-          if (_context.Hotels == null)
-          {
-              return NotFound();
-          }
+            if (_context.Hotels == null)
+            {
+                return NotFound();
+            }
             var hotel = await _context.Hotels
                 .Include(hotel => hotel.Name)
                 .Include(hotel => hotel.Description)
                 .Include(hotel => hotel.Address)
                 .Include(hotel => hotel.PostalCode)
-                //.Include(hotel => hotel.Email)
                 .FirstOrDefaultAsync(hotel => hotel.Id == id);
 
             if (hotel is null)
-            {
-                return NotFound("Hotel not found. ");
+            return NotFound("Hotel not found. ");
             return Ok(hotel);
-            }
-
         }
 
         [HttpPut]
@@ -88,16 +73,19 @@ namespace ReservationsBackend.Controllers
         {
             var hotel = await _context.Hotels.FindAsync(id);
             if (hotel == null)
-            
+
                 return NotFound("Hotel not found. ");
-                _context.Hotels.Remove(hotel);
-                await _context.SaveChangesAsync();
-                return NoContent();
+            _context.Hotels.Remove(hotel);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
 
         private bool HotelExists(int id)
         {
             return (_context.Hotels?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+
     }
 }
+        

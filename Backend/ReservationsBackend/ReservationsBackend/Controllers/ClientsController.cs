@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing.Printing;
 
 namespace ReservationsBackend.Controllers
 {
@@ -15,20 +16,56 @@ namespace ReservationsBackend.Controllers
         }
 
 
-        [HttpGet]
+       [HttpGet]
         
-       /*public async Task<ActionResult<List<Client>>> GetAllClients(string query = "") 
-        {
-            // Searching
-            var result = await _context.Clients
-                .Where(client =>
-                    client.Id.ToString().Contains(query))
-            .ToListAsync();
+       public async Task<ActionResult<List<Client>>> GetAllClients(string query = "", string sortBy= "", int page = 1, int pageSize = 10) 
+       {
 
+            var result = _context.Clients
+                .Where(client =>
+                    client.Id.ToString().Contains(query));
+
+            switch (sortBy)
+            {
+                case "creationDateAsc":
+                    result = result.OrderBy(client => client.CreationDate);
+                    break;
+                case "creationDateDesc":
+                    result = result.OrderByDescending(client => client.CreationDate);
+                    break;
+                default:
+                    result = result.OrderBy(client => client.Id);
+                    break;
+            }
+
+            result = result.Skip((page - 1) * pageSize).Take(pageSize);
+            var clients = await result.ToListAsync();
             return Ok(result);
-        }*/
-        
-        
+
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Client>> GetSingleClient(int id)
+        {
+            if (_context.Clients == null)
+            {
+                return NotFound();
+            }
+            var clients = await _context.Clients
+                .Include(clients => clients.FirstName)
+                .Include(clients => clients.LastName)
+                .Include(clients => clients.Email)
+                .Include(clients => clients.Phone)
+
+                .FirstOrDefaultAsync(client => client.Id == id);
+
+            if (clients is null)
+                return NotFound("Client not found. ");
+            return Ok(clients);
+
+
+        }
+
         [HttpPost]
         public async Task<ActionResult<List<Client>>> CreateClient(Client client)
         {
@@ -38,7 +75,6 @@ namespace ReservationsBackend.Controllers
         }
 
         [HttpPut]
-        //Check this one
         public async Task<ActionResult<List<Client>>> UpdateClient(Client updatedClient)
         {
             var client = await _context.Clients

@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { TableDemo } from '@/test/table-demo'
 
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
@@ -23,7 +24,8 @@ function App() {
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
-        <Button>Esto es una prueba</Button>
+        <Button onClick={() => setCount((count) => count + 1)}>According to new button, count is {count}</Button>
+        <TableDemo />
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>

@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 import './App.css'
 
 import { BrowserRouter, Routes, Route, Link, redirect} from 'react-router-dom'
@@ -11,7 +9,6 @@ import { AuthenticationPage } from '@/pages/authentication/authentication'
 
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>

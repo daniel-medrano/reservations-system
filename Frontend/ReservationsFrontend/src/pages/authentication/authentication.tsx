@@ -1,5 +1,3 @@
-import Link from "react-dom"
-
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { UserAuthForm } from "@/pages/authentication/components/user-auth-form"

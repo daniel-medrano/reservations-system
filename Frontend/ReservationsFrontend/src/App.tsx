@@ -25,10 +25,6 @@ function App() {
         </a>
         <h2>  Tests  </h2>
       </div>
-      
-      <div>
-        <Route path="/" Component={AuthenticationPage} />
-      </div>
         
 
       <div className="card">

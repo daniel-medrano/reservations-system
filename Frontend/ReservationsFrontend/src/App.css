@@ -35,10 +35,11 @@ body {
   font-size: 1.2em;
   text-transform: uppercase;
   font-weight: 500;
-  display: inline-block;
+  display: flex;
   width: 80px;
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
+  justify-content: space-evenly;
 }
 
 .Menu a:hover {

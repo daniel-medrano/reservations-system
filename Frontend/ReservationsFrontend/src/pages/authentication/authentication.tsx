@@ -45,7 +45,7 @@ export function AuthenticationPage() {
                 Create an account
               </h1>
               <p className="text-sm text-muted-foreground">
-                Enter your email below to create your account
+                Enter your email below to Log In your account
               </p>
             </div>
             <UserAuthForm />

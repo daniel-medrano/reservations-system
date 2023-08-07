@@ -2,7 +2,7 @@ import Link from "react-dom"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
-import { UserAuthForm } from "@/authentication/components/user-auth-form"
+import { UserAuthForm } from "@/pages/authentication/components/user-auth-form"
 
 export function AuthenticationPage() {
   return (

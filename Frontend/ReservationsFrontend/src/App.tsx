@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button'
-import { TableDemo } from '@/test/table-demo'
 
-import { AuthenticationPage } from '@/authentication/page'
+import { AuthenticationPage } from '@/pages/authentication/page'
 
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
@@ -38,7 +37,7 @@ function App() {
           count is {count}
         </button>
         <Button onClick={() => setCount((count) => count + 1)}>Aumentar contadores {count}</Button>
-        <TableDemo />
+        
         <AuthenticationPage />
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR

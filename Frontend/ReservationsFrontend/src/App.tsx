@@ -26,21 +26,10 @@ function App() {
         <h2>  Tests  </h2>
       </div>
       
-      
-
-      <Router> 
-        <Route>
-          <Route path="/" Component={AuthenticationPage} />
-
-        </Route>
-
-
-
-
-      </Router>
-
-
-
+      <div>
+        <Route path="/" Component={AuthenticationPage} />
+      </div>
+        
 
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>

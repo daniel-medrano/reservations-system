@@ -8,7 +8,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { Link } from 'react-router-dom'
-
+import { BrowserRouter as Router, Routes, Route, redirect, } from 'react-router-dom'
 
 
 function App() {
@@ -23,13 +23,30 @@ function App() {
         <a href="https://react.dev" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
+        <h2>  Tests  </h2>
       </div>
       
+      
+
+      <Router> 
+        <Route>
+          <Route path="/" Component={AuthenticationPage} />
+
+        </Route>
+
+
+
+
+      </Router>
+
+
+
+
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
-        <Button onClick={() => setCount((count) => count + 1)}>Aumentar contador {count}</Button>
+        <Button onClick={() => setCount((count) => count + 1)}>Aumentar contadores {count}</Button>
         <TableDemo />
         <AuthenticationPage />
         <p>

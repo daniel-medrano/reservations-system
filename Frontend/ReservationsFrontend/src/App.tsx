@@ -7,8 +7,8 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import { Link } from 'react-router-dom'
-import { BrowserRouter as Router, Routes, Route, redirect, } from 'react-router-dom'
+
+import { BrowserRouter, Routes, Route, Link, redirect} from 'react-router-dom'
 
 
 function App() {
@@ -26,6 +26,12 @@ function App() {
         <h2>  Tests  </h2>
       </div>
         
+      <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<h1> Home </h1>}/>
+      </Routes>
+      </BrowserRouter>
+
 
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>

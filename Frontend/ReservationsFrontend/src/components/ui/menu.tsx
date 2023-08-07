@@ -6,7 +6,7 @@ export function Menu(){
             <Link to="/"> Home </Link>
             <Link to="/about"> About </Link>
             <Link to="/Rooms"> Rooms </Link>
-
+            <Link to="/Log in"> Log in </Link>
             
         </nav>
     );

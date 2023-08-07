@@ -30,10 +30,10 @@ export function AuthenticationPage() {
             <blockquote className="space-y-2">
               <p className="text-lg">
                 &ldquo;
-                Emerald hills and turquoise seas
-                Endless canvas brushed with trees
-                That sway so gently in the hue
-                Of watercolor azure blue
+                Emerald hills and turquoise seas.
+                Endless canvas brushed with trees.
+                That sway so gently in the hue.
+                Of watercolor azure blue.
                 .&rdquo;
               </p>
               <footer className="text-sm">by Douglas J. Olson</footer>

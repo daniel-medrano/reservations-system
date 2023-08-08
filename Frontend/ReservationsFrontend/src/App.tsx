@@ -1,32 +1,34 @@
 import './App.css'
 
 import { BrowserRouter, Routes, Route, Link, redirect} from 'react-router-dom'
-import { Menu } from './components/ui/menu'
+import { NavBar } from './pages/navbar'
+
 
 import { Home } from './pages/home/Home'
 import { About } from './pages/about/about'
 import { Rooms } from './pages/rooms/rooms'
 import { AuthenticationPage } from '@/pages/authentication/authentication'
 
+import Layout from './pages/layout'
+import LayoutWithoutNavbar from './pages/layout-without-navbar'
+
 
 function App() {
 
   return (
     <>
-      <body>
       <BrowserRouter>
-      <Menu />
       <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/About' element={<About />} />
-        <Route path='/Rooms' element={<Rooms />} />
-        <Route path='/Log In' element={<AuthenticationPage />} />
-        
+        <Route path='/' element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path='/about' element={<About />} />
+          <Route path='/rooms' element={<Rooms />} />
+        </Route>
+        <Route element={<LayoutWithoutNavbar />}>
+          <Route path='/login' element={<AuthenticationPage />} />
+        </Route>
       </Routes>
       </BrowserRouter>
-      
-      <br></br> <br></br>
-      </body>
     </>
   )
 }

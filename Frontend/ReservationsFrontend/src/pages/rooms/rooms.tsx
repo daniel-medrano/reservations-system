@@ -1,3 +1,5 @@
 export function Rooms (){
-    return <h1> Rooms </h1>
+    return (
+    <h1> Rooms </h1>
+    )
 }

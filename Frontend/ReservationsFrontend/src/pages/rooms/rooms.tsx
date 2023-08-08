@@ -1,5 +1,12 @@
+import RoomCard from "@/components/ui/room-card"
+
 export function Rooms (){
     return (
-    <h1> Rooms </h1>
+        <>
+        
+        <RoomCard />
+        
+        </>
+    
     )
 }

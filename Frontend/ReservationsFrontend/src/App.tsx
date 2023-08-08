@@ -7,6 +7,7 @@ import { NavBar } from './pages/navbar'
 import { Home } from './pages/home/Home'
 import { About } from './pages/about/about'
 import { Rooms } from './pages/rooms/rooms'
+import { Payment } from './pages/payment/payment'
 import { AuthenticationPage } from '@/pages/authentication/authentication'
 
 import Layout from './pages/layout'
@@ -23,6 +24,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path='/about' element={<About />} />
           <Route path='/rooms' element={<Rooms />} />
+          <Route path='/payments' element={<Payment />} />
         </Route>
         <Route element={<LayoutWithoutNavbar />}>
           <Route path='/login' element={<AuthenticationPage />} />

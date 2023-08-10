@@ -117,14 +117,14 @@ function getData(query: string, sortBy: string, pageIndex: number, pageSize: num
             break;
     }
     return {
-        data: reservations.slice(pageIndex * pageSize - pageSize, pageIndex * pageSize),
+        data: reservations.slice((pageIndex + 1) * pageSize - pageSize, (pageIndex + 1) * pageSize),
         totalCount: reservations.length
     }
 }
 
 
 export default function Reservations() {
-    const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({ pageIndex: 1, pageSize: 10 })
+    const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
     const [sorting, setSorting] = useState<SortingState>([])
     const [globalFilter, setGlobalFilter] = useState("")
     const sortBy = sorting[0]?.desc ? "-" + sorting[0].id : sorting[0]?.id
@@ -134,20 +134,29 @@ export default function Reservations() {
 
     return (
         <>
-            <div className="container mx-auto py-10"><h1>Reservations</h1></div>
-            <div className="container mx-auto">
-                <DataTable
-                    columns={columns}
-                    data={data}
-                    totalCount={totalCount}
-                    pagination={{ pageIndex, pageSize }}
-                    setPagination={setPagination}
-                    sorting={sorting}
-                    setSorting={setSorting}
-                    globalFilter={globalFilter}
-                    setGlobalFilter={setGlobalFilter} />
+            <div className="h-full flex-1 flex-col space-y-8 p-8 md:flex">
+                <div className="flex items-center justify-between space-y-2">
+                    <div>
+                        <h2 className="text-2xl font-bold tracking-tight">Reservations</h2>
+                        <p className="text-muted-foreground">
+                            Here&apos;s a list of the reservations
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <DataTable
+                        columns={columns}
+                        data={data}
+                        totalCount={totalCount}
+                        pagination={{ pageIndex, pageSize }}
+                        setPagination={setPagination}
+                        sorting={sorting}
+                        setSorting={setSorting}
+                        globalFilter={globalFilter}
+                        setGlobalFilter={setGlobalFilter}
+                    />
+                </div>
             </div>
-
         </>
     )
 }

@@ -1,14 +1,16 @@
 import {
     ColumnDef,
-    ColumnFiltersState,
+    PaginationState,
     SortingState,
+    ColumnFiltersState,
     VisibilityState,
     flexRender,
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
-    useReactTable
+    useReactTable,
+    OnChangeFn
 } from "@tanstack/react-table"
 
 import {
@@ -35,36 +37,60 @@ import { useState } from "react"
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
+    pageCount: number
+    pagination: PaginationState,
+    setPagination: OnChangeFn<PaginationState>
 }
 
 export function DataTable<TData, TValue>({
     columns,
-    data
+    data,
+    pageCount,
+    pagination,
+    setPagination
 }: DataTableProps<TData, TValue>) {
+    const [first, setfirst] = useState(0)
+    let {pageIndex, pageSize} = pagination
+    // const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({ pageIndex: 1, pageSize: 10 })
     const [sorting, setSorting] = useState<SortingState>([])
+    console.log(sorting)
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    console.log(columnFilters)
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+    console.log(columnVisibility)
     const [rowSelection, setRowSelection] = useState({})
+    console.log(rowSelection)
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
+        // onPaginationChange: setPagination,
+        // getPaginationRowModel: getPaginationRowModel(),
+        manualPagination: true,
+        pageCount: pageCount,
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
         onRowSelectionChange: setRowSelection,
+        getRowId: (_originalRow, index, _parent) => {
+            return (index + pageSize * (pageIndex - 1)).toString()
+        },
         state: {
+            pagination,
             sorting,
             columnFilters,
             columnVisibility,
             rowSelection
-        }
+        },
+        debugTable: true
     })
+
+    console.log(table.getRowModel().rows)
     return (
         <div>
+            <button onClick={() => setfirst(first + 1)}>{first}</button>
             <div className="flex items-center py-4">
                 <Input placeholder="Search..." className="max-w-sm" />
                 <DropdownMenu>
@@ -137,10 +163,10 @@ export function DataTable<TData, TValue>({
                     {table.getFilteredSelectedRowModel().rows.length} of{" "}
                     {table.getFilteredRowModel().rows.length} row(s) selected.
                 </div>
-                <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+                <Button variant="outline" size="sm" onClick={() => setPagination({pageIndex: pageIndex - 1, pageSize})} disabled={pageIndex == 1}>
                     Previous
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+                <Button variant="outline" size="sm" onClick={() => setPagination({pageIndex: pageIndex + 1, pageSize})} disabled={pageIndex == pageCount}>
                     Next
                 </Button>
             </div>

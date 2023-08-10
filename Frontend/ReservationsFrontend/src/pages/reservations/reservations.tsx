@@ -1,8 +1,16 @@
+import { useState } from "react"
+
 import { Reservation, columns } from "./components/columns"
 import { DataTable } from "./components/data-table"
 
- function getData(): Reservation[] {
-    return [
+
+import {
+    PaginationState
+} from "@tanstack/react-table"
+
+
+function getData(pageIndex: number, pageSize: number): Reservation[] {
+    const reservations = [
         {
             id: 1,
             creationDate: new Date("09-08-2023"),
@@ -88,17 +96,21 @@ import { DataTable } from "./components/data-table"
             status: true
         }
     ]
+
+    return reservations.slice(pageIndex * pageSize - pageSize, pageIndex * pageSize)
 }
 
 
-export default function Rervations() {
-    const data = getData()
+export default function Reservations() {
+    const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({ pageIndex: 1, pageSize: 4 })
+    console.log(pageIndex)
+    const data = getData(pageIndex, pageSize)
 
     return (
         <>
             <div className="container mx-auto py-10"><h1>Reservations</h1></div>
             <div className="container mx-auto">
-                <DataTable columns={columns} data={data} />
+                <DataTable columns={columns} data={data} pageCount={3} pagination={{ pageIndex, pageSize }} setPagination={setPagination} />
             </div>
 
         </>

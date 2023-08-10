@@ -57,6 +57,8 @@ interface DataTableProps<TData, TValue> {
     setPagination: OnChangeFn<PaginationState>
     sorting: SortingState
     setSorting: OnChangeFn<SortingState>
+    globalFilter: string
+    setGlobalFilter: OnChangeFn<string>
 }
 
 export function DataTable<TData, TValue>({
@@ -66,12 +68,14 @@ export function DataTable<TData, TValue>({
     pagination,
     setPagination,
     sorting,
-    setSorting
+    setSorting,
+    globalFilter,
+    setGlobalFilter
 }: DataTableProps<TData, TValue>) {
     const { pageIndex, pageSize } = pagination
     let pageCount = Math.ceil(totalCount / pageSize)
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    console.log(columnFilters)
+    // const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    // console.log(columnFilters)
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     console.log(columnVisibility)
     const [rowSelection, setRowSelection] = useState({})
@@ -88,8 +92,10 @@ export function DataTable<TData, TValue>({
         manualSorting: true,
         onSortingChange: setSorting,
         // getSortedRowModel: getSortedRowModel(),
-        onColumnFiltersChange: setColumnFilters,
-        getFilteredRowModel: getFilteredRowModel(),
+        manualFiltering: true,
+        onGlobalFilterChange: setGlobalFilter,
+        // onColumnFiltersChange: setColumnFilters,
+        // getFilteredRowModel: getFilteredRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
         onRowSelectionChange: setRowSelection,
         getRowId: (_originalRow, index, _parent) => {
@@ -99,7 +105,8 @@ export function DataTable<TData, TValue>({
         state: {
             pagination,
             sorting,
-            columnFilters,
+            // columnFilters,
+            globalFilter,
             columnVisibility,
             rowSelection
         },
@@ -110,7 +117,11 @@ export function DataTable<TData, TValue>({
     return (
         <div>
             <div className="flex items-center py-4">
-                <Input placeholder="Search..." className="max-w-sm" />
+                <Input 
+                    placeholder="Search..."
+                    value={globalFilter} 
+                    onChange={(event) => setGlobalFilter(event.target.value)}
+                    className="max-w-sm" />
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="ml-auto">

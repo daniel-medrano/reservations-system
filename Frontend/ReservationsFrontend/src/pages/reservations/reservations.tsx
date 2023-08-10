@@ -9,9 +9,14 @@ import {
     SortingState
 } from "@tanstack/react-table"
 
+interface DataResponse {
+    data: Reservation[]
+    totalCount: number
+}
 
-function getData(pageIndex: number, pageSize: number, sortBy: string): Reservation[] {
-    const reservations = [
+
+function getData(query: string, sortBy: string, pageIndex: number, pageSize: number): DataResponse {
+    let reservations = [
         {
             id: 1,
             creationDate: new Date("09-08-2023"),
@@ -92,11 +97,14 @@ function getData(pageIndex: number, pageSize: number, sortBy: string): Reservati
         {
             id: 12,
             creationDate: new Date("09-08-2021"),
-            amountAdults: 1,
+            amountAdults: 2,
             amountChildren: 2,
             status: true
         }
     ]
+
+    reservations = reservations.filter((reservation) => reservation.amountAdults.toString().includes(query) || reservation.amountChildren.toString().includes(query))
+
     switch (sortBy) {
         case "creationDate":
             reservations.sort((a, b) => Number(a.creationDate) - Number(b.creationDate))
@@ -108,16 +116,21 @@ function getData(pageIndex: number, pageSize: number, sortBy: string): Reservati
             reservations.sort((a, b) => Number(a.id) - Number(b.id))
             break;
     }
-    return reservations.slice(pageIndex * pageSize - pageSize, pageIndex * pageSize)
+    return {
+        data: reservations.slice(pageIndex * pageSize - pageSize, pageIndex * pageSize),
+        totalCount: reservations.length
+    }
 }
 
 
 export default function Reservations() {
     const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({ pageIndex: 1, pageSize: 10 })
     const [sorting, setSorting] = useState<SortingState>([])
+    const [globalFilter, setGlobalFilter] = useState("")
     const sortBy = sorting[0]?.desc ? "-" + sorting[0].id : sorting[0]?.id
 
-    const data = getData(pageIndex, pageSize, sortBy)
+
+    const { data, totalCount } = getData(globalFilter, sortBy, pageIndex, pageSize)
 
     return (
         <>
@@ -126,11 +139,13 @@ export default function Reservations() {
                 <DataTable
                     columns={columns}
                     data={data}
-                    totalCount={12}
+                    totalCount={totalCount}
                     pagination={{ pageIndex, pageSize }}
-                    setPagination={setPagination} 
+                    setPagination={setPagination}
                     sorting={sorting}
-                    setSorting={setSorting} />
+                    setSorting={setSorting}
+                    globalFilter={globalFilter}
+                    setGlobalFilter={setGlobalFilter} />
             </div>
 
         </>

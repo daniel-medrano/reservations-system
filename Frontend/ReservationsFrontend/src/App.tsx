@@ -12,6 +12,7 @@ import { AuthenticationPage } from '@/pages/authentication/authentication'
 
 import Layout from './pages/layout'
 import LayoutWithoutNavbar from './pages/layout-without-navbar'
+import Reservations from './pages/reservations/reservations'
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           <Route path='/about' element={<About />} />
           <Route path='/rooms' element={<Rooms />} />
           <Route path='/payments' element={<Payment />} />
+          <Route path='/reservations' element={<Reservations />} />
         </Route>
         <Route element={<LayoutWithoutNavbar />}>
           <Route path='/login' element={<AuthenticationPage />} />

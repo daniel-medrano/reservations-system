@@ -6,7 +6,9 @@ export default function Layout() {
   return (
     <>
       <Nav />
-      <Outlet />
+      <div className='container relative'>
+        <Outlet />
+      </div>
     </>
   );
 };

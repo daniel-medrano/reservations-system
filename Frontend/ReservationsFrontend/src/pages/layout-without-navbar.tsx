@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavBar } from './navbar';
+import { Nav } from './nav';
 import { Outlet } from 'react-router';
 
 export default function LayoutWithoutNavbar() {

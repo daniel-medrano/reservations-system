@@ -1,26 +1,15 @@
 import { useState } from "react"
 
+import { DataTableToolbar } from "./data-table-toolbar"
 import { DataTablePagination } from "./data-table-pagination"
-
-import {
-    ChevronLeftIcon,
-    ChevronRightIcon,
-    DoubleArrowLeftIcon,
-    DoubleArrowRightIcon,
-    MixerHorizontalIcon
-} from "@radix-ui/react-icons"
 
 import {
     ColumnDef,
     PaginationState,
     SortingState,
-    ColumnFiltersState,
     VisibilityState,
     flexRender,
     getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
     getFacetedRowModel,
     useReactTable,
     OnChangeFn
@@ -34,17 +23,6 @@ import {
     TableHeader,
     TableRow
 } from "@/components/ui/table"
-
-import { Button } from "@/components/ui/button"
-
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
-import { Input } from "@/components/ui/input"
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
@@ -101,42 +79,7 @@ export function DataTable<TData, TValue>({
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center">
-                <Input
-                    placeholder="Search..."
-                    value={globalFilter}
-                    onChange={(event) => { table.setPageIndex(0); setGlobalFilter(event.target.value) }}
-                    className="max-w-sm" />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto">
-                            <MixerHorizontalIcon className="mr-2 h-4 w-4" />
-                            View
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {table
-                            .getAllColumns()
-                            .filter(
-                                (column) => column.getCanHide()
-                            )
-                            .map((column) => {
-                                return (
-                                    <DropdownMenuCheckboxItem
-                                        key={column.id}
-                                        className="capitalize"
-                                        checked={column.getIsVisible()}
-                                        onCheckedChange={(value) =>
-                                            column.toggleVisibility(!!value)
-                                        }
-                                    >
-                                        {column.id}
-                                    </DropdownMenuCheckboxItem>
-                                )
-                            })}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
+            <DataTableToolbar table={table} />
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>

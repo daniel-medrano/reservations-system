@@ -17,44 +17,31 @@ export function NavBar(){
         <NavigationMenu>
             <NavigationMenuList>
                 <NavigationMenuItem>
-                    <Link to="/">
-                        <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                            Home
-                        </NavigationMenuLink>
-                    </Link>
+                    <NavigationMenuLink href="/" className={navigationMenuTriggerStyle()}>
+                        Home
+                    </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                    <Link to="/about">
-                        <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                            About
-                        </NavigationMenuLink>
-                    </Link>
+                    <NavigationMenuLink href="/about" className={navigationMenuTriggerStyle()}>
+                        About
+                    </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                    <Link to="/rooms">
-                        <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                            Rooms
-                        </NavigationMenuLink>
-                    </Link>
+                    <NavigationMenuLink href="/rooms" className={navigationMenuTriggerStyle()}>
+                        Rooms
+                    </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                    <Link to="/login">
-                        <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                            Log in
-                        </NavigationMenuLink>
-                    </Link>
+                    <NavigationMenuLink href="/reservations" className={navigationMenuTriggerStyle()}>
+                        Reservations
+                    </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                    <NavigationMenuLink href="/login" className={navigationMenuTriggerStyle()}>
+                        Log in
+                    </NavigationMenuLink>
                 </NavigationMenuItem>
             </NavigationMenuList>
         </NavigationMenu>
-
-
-
-        // <nav className="menu">
-        //     <Link to="/"> Home </Link>
-        //     <Link to="/about"> About </Link>
-        //     <Link to="/Rooms"> Rooms </Link>
-        //     <Link to="/Log in"> Log in </Link>
-        
-        // </nav>
     );
 }

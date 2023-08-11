@@ -1,7 +1,7 @@
 import './App.css'
 
 import { BrowserRouter, Routes, Route, Link, redirect} from 'react-router-dom'
-import { NavBar } from './pages/navbar'
+import { Nav } from './pages/nav'
 
 
 import { Home } from './pages/home/Home'

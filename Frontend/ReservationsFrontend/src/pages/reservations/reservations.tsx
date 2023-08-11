@@ -3,7 +3,6 @@ import { useState } from "react"
 import { Reservation, columns } from "./components/columns"
 import { DataTable } from "./components/data-table"
 
-
 import {
     PaginationState,
     SortingState

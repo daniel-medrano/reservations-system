@@ -20,8 +20,8 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="ml-auto">
-                    <MixerHorizontalIcon className="mr-2 h-4 w-4" />
-                    View
+                    <MixerHorizontalIcon className="md:mr-2 h-4 w-4" />
+                    <span className="hidden md:inline-block">View</span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

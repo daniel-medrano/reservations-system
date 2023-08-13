@@ -21,24 +21,8 @@ import { Reservation } from "./columns"
 import { Minus, Plus } from "lucide-react"
 
 const formSchema = z.object({
-    amountAdults: z.coerce.number({
-        errorMap: (issue) => {
-            issue.code
-            console.log("issue", issue)
-            return { message: "test" }
-        }
-    }).int().gt(0),
-    amountChildren: z.coerce.number({
-        errorMap: (issue) => {
-            issue.code
-            console.log("issue", issue)
-            return { message: "test" }
-        }
-    }).int().gt(0)
-}).required({
-    amountAdults: true,
-    amountChildren: true
-
+    amountAdults: z.number(),
+    amountChildren: z.number()
 })
 
 interface ReservationFormProps {
@@ -55,7 +39,7 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
             return zodResolver(formSchema)(data, context, options)
         },
         defaultValues: {
-            amountAdults: reservation?.amountAdults ?? 0,
+            amountAdults: reservation?.amountAdults ?? 1,
             amountChildren: reservation?.amountChildren ?? 0
         }
     })
@@ -75,11 +59,11 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                             <FormLabel>Adults</FormLabel>
                             <FormControl>
                                 <div className="flex items-center space-x-4">
-                                    <Button variant="outline" onClick={() => form.setValue("amountAdults", field.value == 0 ? 0 : field.value - 1)} disabled={field.value == 0 || disabled}>
+                                    <Button type="button" variant="outline" onClick={() => form.setValue("amountAdults", field.value == 1 ? field.value : field.value - 1)} disabled={field.value == 1 || disabled}>
                                         <Minus className="h-4 w-4" />
                                     </Button>
                                     <span className="text-center text-sm h-4 w-4">{field.value}</span>
-                                    <Button variant="outline" onClick={() => form.setValue("amountAdults", field.value == 10 ? 10 : field.value + 1)} disabled={field.value == 10 || disabled}>
+                                    <Button type="button" variant="outline" onClick={() => form.setValue("amountAdults", field.value == 10 ? field.value : field.value + 1)} disabled={field.value == 10 || disabled}>
                                         <Plus className="h-4 w-4" />
                                     </Button>
                                 </div>
@@ -99,11 +83,11 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                             <FormLabel>Children</FormLabel>
                             <FormControl>
                                 <div className="flex items-center space-x-4">
-                                    <Button variant="outline" onClick={() => form.setValue("amountChildren", field.value == 0 ? 0 : field.value - 1)} disabled={field.value == 0 || disabled}>
+                                    <Button type="button" variant="outline" onClick={() => form.setValue("amountChildren", field.value == 0 ? 0 : field.value - 1)} disabled={field.value == 0 || disabled}>
                                         <Minus className="h-4 w-4" />
                                     </Button>
                                     <span className="text-center text-sm h-4 w-4">{field.value}</span>
-                                    <Button variant="outline" onClick={() => form.setValue("amountChildren", field.value == 10 ? 10 : field.value + 1)} disabled={field.value == 10 || disabled}>
+                                    <Button type="button" variant="outline" onClick={() => form.setValue("amountChildren", field.value == 10 ? 10 : field.value + 1)} disabled={field.value == 10 || disabled}>
                                         <Plus className="h-4 w-4" />
                                     </Button>
                                 </div>

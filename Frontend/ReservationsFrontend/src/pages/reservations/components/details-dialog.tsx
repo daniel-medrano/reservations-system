@@ -2,8 +2,6 @@ import { useState } from "react"
 
 import { Plus, MoreHorizontal } from "lucide-react"
 
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
 import {
@@ -82,7 +80,7 @@ export function DetailsDialog({ reservation }: DetailsDialogProps) {
                         </DialogHeader>
                         <ReservationForm
                             disabled={mode === "view" ? true : false}
-                            reservation={mode != "add" ? reservation : undefined }
+                            reservation={mode != "add" ? reservation : undefined}
                             button={<DialogFooter>
                                 <Button type="submit">Save</Button>
                             </DialogFooter>

@@ -11,6 +11,8 @@ import { AuthenticationPage } from '@/pages/authentication/authentication'
 import Layout from './pages/layout'
 import LayoutWithoutNavbar from './pages/layout-without-navbar'
 import Reservations from './pages/reservations/reservations'
+import Chatbot from './pages/chatbot/chatbot'
+import LayoutWithoutFooter from './pages/layout-without-footer'
 
 
 function App() {
@@ -26,7 +28,10 @@ function App() {
             <Route path='/payments' element={<Payment />} />
             <Route path='/reservations' element={<Reservations />} />
           </Route>
-          <Route element={<LayoutWithoutNavbar />}>
+          <Route element={<LayoutWithoutFooter />}>
+          <Route path='/chatbot' element={<Chatbot />} />
+        </Route>
+        <Route element={<LayoutWithoutNavbar />}>
             <Route path='/login' element={<AuthenticationPage />} />
           </Route>
         </Routes>

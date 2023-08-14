@@ -1,23 +1,19 @@
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
+
 import { DetailsDialog } from "./details-dialog"
 
 export type Reservation = {
     id: number
+    checkInDate: Date
+    checkOutDate: Date
     creationDate: Date
     amountAdults: number
     amountChildren: number
+    notes: string
     status: boolean
 }
 
@@ -43,6 +39,14 @@ export const columns: ColumnDef<Reservation>[] = [
                 </Button>
             )
         }
+    },
+    {
+        accessorKey: "checkInDate",
+        header: "Check-in"
+    },
+    {
+        accessorKey: "checkOutDate",
+        header: "Check-out"
     },
     {
         accessorKey: "status",

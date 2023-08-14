@@ -2,8 +2,6 @@ import { useState } from "react"
 
 import { Plus, MoreHorizontal } from "lucide-react"
 
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
 import {
@@ -25,6 +23,7 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Reservation } from "./columns"
+import { ReservationForm } from "./reservation-form"
 
 interface DetailsDialogProps {
     reservation?: Reservation
@@ -36,8 +35,8 @@ export function DetailsDialog({ reservation }: DetailsDialogProps) {
     return (
         <Dialog>
             {
-                reservation == null ?
-                    <DialogTrigger asChild>
+                reservation == null
+                    ? <DialogTrigger asChild>
                         <Button>
                             <Plus className="md:mr-2 h-4 w-4" />
                             <span className="hidden md:inline-block">Add reservation</span>
@@ -69,8 +68,8 @@ export function DetailsDialog({ reservation }: DetailsDialogProps) {
                     </DropdownMenu>
             }
             {
-                mode != "delete" ?
-                    <DialogContent>
+                mode != "delete"
+                    ? <DialogContent>
                         <DialogHeader>
                             <DialogTitle>
                                 {mode.replace(mode[0], mode[0].toUpperCase())} reservation
@@ -79,7 +78,15 @@ export function DetailsDialog({ reservation }: DetailsDialogProps) {
                                 {mode.replace(mode[0], mode[0].toUpperCase())} a reservation here.
                             </DialogDescription>
                         </DialogHeader>
-                        <div className="grid gap-4 py-4">
+                        <ReservationForm
+                            disabled={mode === "view" ? true : false}
+                            reservation={mode != "add" ? reservation : undefined}
+                            button={<DialogFooter>
+                                <Button type="submit">Save</Button>
+                            </DialogFooter>
+                            }
+                        />
+                        {/* <div className="grid gap-4 py-4">
                             <div className="grid grid-cols-4 items-center gap-4">
                                 <Label htmlFor="amountAdults" className="text-right">
                                     Adults
@@ -92,14 +99,13 @@ export function DetailsDialog({ reservation }: DetailsDialogProps) {
                                 </Label>
                                 <Input id="amountChildren" defaultValue={mode != "add" ? reservation!.amountChildren : ""} disabled={mode == "view" ? true : false} className="col-span-3" />
                             </div>
-                            
                         </div>
-                        {
-                            mode == "view" ? "" :
-                                <DialogFooter>
-                                    <Button type="submit">Save</Button>
-                                </DialogFooter>
-                        }
+                        {mode == "view"
+                            ? ""
+                            : <DialogFooter>
+                                <Button type="submit">Save</Button>
+                            </DialogFooter>
+                        } */}
                     </DialogContent>
                     : <DialogContent>
                         <DialogHeader>

@@ -20,6 +20,12 @@ export function Nav() {
                         </span>
                     </Link>
                     <nav className="flex items-center space-x-6 text-sm font-medium">
+                        <Link to="/chatbot" className={cn(
+                            "transition-colors hover:text-foreground/80",
+                            location.pathname === "/chatbot" ? "text-foreground" : "text-foreground/60"
+                        )}>
+                            Chatbot
+                        </Link>
                         <Link to="/rooms" className={cn(
                             "transition-colors hover:text-foreground/80",
                             location.pathname === "/rooms" ? "text-foreground" : "text-foreground/60"
@@ -51,6 +57,5 @@ export function Nav() {
                     </nav>
                 </div>
             </div>
-        </div>
-    );
+        </div>);
 }

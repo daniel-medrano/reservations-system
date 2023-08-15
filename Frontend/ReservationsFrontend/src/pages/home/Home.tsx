@@ -18,14 +18,14 @@ export function Home (){
                     </p>        
                 </div>
 
-                <div className="pl-8 col-span-1 justify-end">
-                    <h2 className="text-3xl font-semibold mb-4 justify-end">Contact us</h2>
-                    <div className="pt-2 grid grid-cols-3">
+                <div className="pl-8 col-span-1 justify-center">
+                    <h2 className="text-3xl font-semibold mb-4 text-center">Contact us</h2>
+                    <div className="pt-2 grid grid-cols-4">
                         <div className="pl-2 col-span-1">
-                            <Link to="https://accounts.google.com">    
+                            <Link to="https://www.facebook.com/">    
                                 <Button variant="outline" type="button" >                               
-                                    <Icons.google className="mr-2 h-4 w-4" />
-                                    Google
+                                    <Icons.facebook className="mr-2 h-4 w-4" />
+                                    FaceBook
                                 </Button>
                             </Link>
                         </div>
@@ -40,10 +40,19 @@ export function Home (){
                         </div>
 
                         <div className="pl-2 col-span-1 justify-end">
-                            <Link to="https://www.apple.com/">
+                            <Link to="https://www.instagram.com/">
                                 <Button variant="outline" type="button" >                               
-                                    <Icons.apple className="mr-2 h-4 w-4" />
-                                    Apple
+                                    <Icons.instagram className="mr-2 h-4 w-4" />
+                                    Instagram
+                                </Button>
+                            </Link>
+                        </div>
+
+                        <div className="pl-2 col-span-1 justify-end">
+                            <Link to="https://web.whatsapp.com/">
+                                <Button variant="outline" type="button" >                               
+                                    <Icons.whatsapp className="mr-2 h-4 w-4" />
+                                    What's App
                                 </Button>
                             </Link>
                         </div>

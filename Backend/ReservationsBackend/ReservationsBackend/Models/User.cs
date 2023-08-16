@@ -4,10 +4,10 @@
     {
         public int Id { get; set; }
         public required string Email { get; set; }
-        public required string Password { get; set; }
-        public DateTime CreationDate { get; set; }
-        public bool Status { get; set; }
-        public required Client Client { get; set; }
+        public required byte[] PasswordHash { get; set; }
+        public required byte[] PasswordSalt { get; set; }
+        public DateTime CreationDate { get; set; } = DateTime.UtcNow;
+        public bool Status { get; set; } = true;
 
     }
 }

@@ -5,40 +5,40 @@ import { Link } from 'react-router-dom'
 
 const RoomCard = () => {
     return (   
-        <div className="pt-6 grid grid-cols-4"> 
-            
-            <div className="pl-8 col-span-1">
-                <img 
-                src= {r1} 
-                className="rounded-md"
-                />
-            </div>
+        <div className="p-4 bg-white rounded-lg shadow-lg">
+            <div className="p-2 grid grid-cols-4"> 
+                
+                <div className=" col-span-1">
+                    <img 
+                    src= {r1} 
+                    className="rounded-md"
+                    />
+                </div>
 
-            <div className="col-span-2 flex flex-col justify-start ">
-                <h2 className="pl-4 text-xl font-semibold ">Suite doble</h2>
-                <p className="pl-4 text-gray-500 text-base "> 
-                ¡estas suites están diseñadas para ser su hogar lejos de su hogar! 
-                Nuestras suites Nanku son perfectas para parejas, familias o grupos pequeños. 
-                Ofrecen un área para dormir con una cama King o dos camas Queen y una amplia sala de estar con dos sofás cama individuales. 
-                Un amplio baño y una terraza o balcón completan la unidad, convirtiéndola en el lugar perfecto para relajarse después 
-                de un largo día de aventuras.
+                <div className="col-span-2 flex flex-col justify-start ">
+                    <h2 className="pl-4 text-xl font-semibold ">Suite</h2>
+                    <p className="pl-4 text-gray-500 text-start "> 
+                        Welcome to the epitome of luxury and relaxation at our Tropical Paradise Suite. 
+                        Nestled within the lush landscapes of Costa Rica, this suite offers an exquisite 
+                        blend of modern comfort and the natural beauty of the tropics.
 
-                </p>
-            </div>
+                    </p>
+                </div>
 
-            <div className="pl-4 col-span-1 flex flex-col justify-start">
-            <h2 className="pl-4 text-xl font-semibold ">Ingrese fecha de ingreso y salida</h2>
-                <DatePickerWithRange />
-            </div>
+                <div className="px-8 col-span-1 flex flex-col justify-start">
+                    <h2 className="pl-8 pt-2 pb-4 text-xl font-semibold text-center">Pick a date.</h2>
+                    <DatePickerWithRange />
 
-            <div className="pl-7 col-span-4 flex flex-col justify-start">
-            
-            <Button asChild> 
-                <Link to="/payments"> Reservar</Link>  
-            </Button>
-            </div>
+                    <div className="pl-8 pt-8 col-span-1 flex flex-col justify-start">            
+                        <Button asChild> 
+                            <Link to="/payments"> Make a reservation</Link>  
+                        </Button>
+                    </div>
+                </div>
 
             
+
+            </div>
         </div>
     )
 }

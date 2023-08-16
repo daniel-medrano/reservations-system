@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 export function Home (){
     return (
     <>
-    <div className="pt-4 bg-gray-100  flex items-center">
+    <div className="pt-4 px-4  bg-gray-100  flex items-center">
         <div className="p-4 bg-white rounded-lg shadow-lg">
             <div className="pt-4 grid grid-cols-2">
                 <div className="pl-8 col-span-1">

@@ -1,6 +1,5 @@
-"use client"
-
-import * as React from "react"
+import { useState } from "react"
+import { baseUrl } from "@/shared"
 
 import { cn } from "@/lib/utils"
 import { Icons } from "@/assets/icons"
@@ -10,11 +9,25 @@ import { Label } from "@/components/ui/label"
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false)
+export function SignInForm({ className, ...props }: UserAuthFormProps) {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault()
+    const url = baseUrl + "auth/sign-in"
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password
+      })
+    })
+
     setIsLoading(true)
 
     setTimeout(() => {
@@ -32,12 +45,28 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             </Label>
             <Input
               id="email"
-              placeholder="name@example.com"
+              placeholder="Email"
               type="email"
               autoCapitalize="none"
               autoComplete="email"
               autoCorrect="off"
               disabled={isLoading}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="grid gap-1">
+            <Label className="sr-only" htmlFor="email">
+              Password
+            </Label>
+            <Input
+              id="password"
+              placeholder="Password"
+              type="password"
+              autoCapitalize="none"
+              autoComplete="password"
+              autoCorrect="off"
+              disabled={isLoading}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <Button disabled={isLoading}>

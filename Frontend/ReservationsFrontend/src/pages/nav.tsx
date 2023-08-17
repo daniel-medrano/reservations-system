@@ -48,11 +48,11 @@ export function Nav() {
                 </div>
                 <div className="flex flex-1 items-center space-x-2 md:justify-end">
                     <nav className="flex items-center space-x-6 text-sm font-medium">
-                        <Link to="/login" className={cn(
+                        <Link to="/sign-in" className={cn(
                             "transition-colors hover:text-foreground/80",
-                            location.pathname === "/login" ? "text-foreground" : "text-foreground/60"
+                            location.pathname === "/sign-in" ? "text-foreground" : "text-foreground/60"
                         )}>
-                            Login
+                            Sign in
                         </Link>
                     </nav>
                 </div>

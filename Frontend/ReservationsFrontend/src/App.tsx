@@ -6,7 +6,8 @@ import { Home } from './pages/home/Home'
 import { About } from './pages/about/about'
 import { Rooms } from './pages/rooms/rooms'
 import { Payment } from './pages/payment/payment'
-import { AuthenticationPage } from '@/pages/authentication/authentication'
+import { SignIn } from '@/pages/signin/sign-in'
+import { SignUp } from '@/pages/signup/sign-up'
 
 import Layout from './pages/layout'
 import LayoutWithoutNavbar from './pages/layout-without-navbar'
@@ -32,7 +33,8 @@ function App() {
           <Route path='/chatbot' element={<Chatbot />} />
         </Route>
         <Route element={<LayoutWithoutNavbar />}>
-            <Route path='/login' element={<AuthenticationPage />} />
+            <Route path='/sign-in' element={<SignIn />} />
+            <Route path='/sign-up' element={<SignUp />} />
           </Route>
         </Routes>
       </BrowserRouter>

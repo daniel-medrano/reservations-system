@@ -8,6 +8,7 @@
         public required byte[] PasswordSalt { get; set; }
         public DateTime CreationDate { get; set; } = DateTime.UtcNow;
         public bool Status { get; set; } = true;
+        public List<Role> Roles { get; set; }
 
     }
 }

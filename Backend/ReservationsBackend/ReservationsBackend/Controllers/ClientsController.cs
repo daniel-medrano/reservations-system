@@ -54,7 +54,6 @@ namespace ReservationsBackend.Controllers
             var clients = await _context.Clients
                 .Include(clients => clients.FirstName)
                 .Include(clients => clients.LastName)
-                .Include(clients => clients.Email)
                 .Include(clients => clients.Phone)
 
                 .FirstOrDefaultAsync(client => client.Id == id);
@@ -84,7 +83,6 @@ namespace ReservationsBackend.Controllers
             if (client is null)
                 return NotFound("Client not found");
             client.Phone = updatedClient.Phone;
-            client.Email = updatedClient.Email;
             await _context.SaveChangesAsync();
             return Ok(client);
         }

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query;
 using ReservationsBackend.Models;
 
 namespace ReservationsBackend.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
     [ApiController]
     public class ReservationsController : ControllerBase

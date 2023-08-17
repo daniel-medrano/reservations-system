@@ -20,6 +20,8 @@ namespace ReservationsBackend.Data
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Client> Clients { get; set; }
+        public DbSet<Role> Roles { get; set; }
+
 
     }
 }

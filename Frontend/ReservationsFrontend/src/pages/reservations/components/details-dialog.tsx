@@ -86,26 +86,6 @@ export function DetailsDialog({ reservation }: DetailsDialogProps) {
                             </DialogFooter>
                             }
                         />
-                        {/* <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="amountAdults" className="text-right">
-                                    Adults
-                                </Label>
-                                <Input id="amountAdults" defaultValue={mode != "add" ? reservation!.amountAdults : ""} disabled={mode == "view" ? true : false} className="col-span-3" />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="amountChildren" className="text-right">
-                                    Children
-                                </Label>
-                                <Input id="amountChildren" defaultValue={mode != "add" ? reservation!.amountChildren : ""} disabled={mode == "view" ? true : false} className="col-span-3" />
-                            </div>
-                        </div>
-                        {mode == "view"
-                            ? ""
-                            : <DialogFooter>
-                                <Button type="submit">Save</Button>
-                            </DialogFooter>
-                        } */}
                     </DialogContent>
                     : <DialogContent>
                         <DialogHeader>

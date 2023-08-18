@@ -117,7 +117,7 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                                                     defaultMonth={date?.from}
                                                     selected={date}
                                                     onSelect={(range) => {
-                                                        if (range != undefined && range.from != undefined && range.from.getTime() == range.to?.getTime()) return
+                                                        if (range?.from != undefined && range.from.getTime() == range.to?.getTime()) return
                                                         setDate(range)
                                                     }}
                                                     numberOfMonths={2}

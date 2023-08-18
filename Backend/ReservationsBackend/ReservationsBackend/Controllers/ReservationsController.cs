@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query;
+using ReservationsBackend.DTOs;
 using ReservationsBackend.Models;
 
 namespace ReservationsBackend.Controllers
@@ -17,7 +19,7 @@ namespace ReservationsBackend.Controllers
             _context = context;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Reservation>>> GetAllReservations(string query="", string sortBy="", int page=1, int pageSize=10)
+        public async Task<ActionResult<ReservationsResponseDTO>> GetAllReservations(string query="", string sortBy="", int pageIndex=1, int pageSize=10)
         { 
             // Searching
             var result = _context.Reservations
@@ -44,10 +46,17 @@ namespace ReservationsBackend.Controllers
                     break;
             }
             // Offset pagination.
-            result = result.Skip((page - 1) * pageSize).Take(pageSize);
+            result = result.Skip((pageIndex - 1) * pageSize).Take(pageSize);
 
             var reservations = await result.ToListAsync();
-            return Ok(reservations);
+
+            var response = new ReservationsResponseDTO
+            {
+                Reservations = reservations,
+                TotalCount = _context.Reservations.Count()
+            };
+
+            return Ok(response);
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<Reservation>> GetSingleReservation(int id)

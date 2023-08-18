@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 import { DetailsDialog } from "./details-dialog"
 
-export type Reservation = {
+export interface Reservation {
     id: number
     checkInDate: Date
     checkOutDate: Date

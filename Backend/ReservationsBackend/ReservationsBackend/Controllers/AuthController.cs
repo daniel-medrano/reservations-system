@@ -48,24 +48,37 @@ namespace ReservationsBackend.Controllers
         }
 
         [HttpPost("sign-in")]
-        public async Task<ActionResult<string>> SignIn(UserDTO userDTO)
+        public async Task<ActionResult<UserResponseDTO>> SignIn(UserDTO userDTO)
         {
-            User? user = await _context.Users.FirstOrDefaultAsync(user => user.Email == userDTO.Email);
+            User? user = await _context.Users
+                .Include(user => user.Roles)
+                .FirstOrDefaultAsync(user => user.Email == userDTO.Email);
 
             if (user == null || !VerifyPasswordHash(userDTO.Password, user.PasswordHash, user.PasswordSalt))
             {
                 return BadRequest("Incorrect email or password.");
             }
             string token = CreateToken(user);
-            return Ok(token);
+
+            UserResponseDTO responseDTO = new UserResponseDTO
+            {
+                Email = user.Email,
+                Roles = user.Roles.Select(role => role.Name).ToList(),
+                Token = token
+            };
+
+            return Ok(responseDTO);
         }
         private string CreateToken(User user)
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Roles.FirstOrDefault()!.Name)
+                new Claim(ClaimTypes.Email, user.Email)
             };
+
+            foreach (var role in user.Roles.ToList()) { 
+                claims.Add(new Claim(ClaimTypes.Role, role.Name));
+            }
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
 

@@ -43,43 +43,17 @@ import { baseUrl } from "@/shared"
 
 const formSchema = z.object({
     dateRange: z.object({
-        from: z.date(),
-        to: z.date()
+        from: z.date({ required_error: "You must specify the date of the check-in."}),
+        to: z.date({ required_error: "You must specify the date of the check-out."})
     }),
     amountAdults: z.number(),
     amountChildren: z.number(),
     clientId: z.number().int(),
-    roomId: z.number().int(),
+    roomTypeId: z.number().int(),
     hotelId: z.number().int(),
     status: z.boolean(),
     notes: z.string()
 })
-
-const frameworks = [
-    {
-        value: "next.js",
-        label: "Next.js",
-    },
-    {
-        value: "sveltekit",
-        label: "SvelteKit",
-    },
-    {
-        value: "nuxt.js",
-        label: "Nuxt.js",
-    },
-    {
-        value: "remix",
-        label: "Remix",
-    },
-    {
-        value: "astro",
-        label: "Astro",
-    },
-]
-
-
-
 
 function getHotels(handleHotelsData: (data: Hotel[]) => void) {
     const url = baseUrl + "/hotels"
@@ -123,27 +97,27 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
     const [roomTypes, setRoomTypes] = useState<RoomType[]>()
     const [clients, setClients] = useState<Client[]>()
 
-    const [hotelId, setHotelId] = useState(reservation?.hotelId ? reservation!.hotelId : undefined)
-    const [roomTypeId, setRoomTypeId] = useState(reservation?.roomId ? reservation!.roomId : undefined)
-    const [clientId, setClientId] = useState(reservation?.clientId ? reservation!.clientId : undefined)
-    console.log("hotelId", hotelId)
-    console.log(hotels)
-
-
     const [date, setDate] = useState<DateRange | undefined>(reservation == undefined ? undefined : {
         from: reservation.checkInDate,
         to: reservation.checkOutDate,
     })
 
     const form = useForm<z.infer<typeof formSchema>>({
-        resolver: (data, context, options) => {
-            data.dateRange.from = date?.from as Date
-            data.dateRange.to = date?.to as Date
+        resolver: async (data, context, options) => {
+            data.dateRange = {
+                from: date?.from as Date,
+                to: date?.to as Date
+            }
+            console.log(options)
+            console.log(context)
             console.log("formData", data)
-            console.log("validation result", zodResolver(formSchema))
+            console.log("validation result", await zodResolver(formSchema)(data, context, options))
             return zodResolver(formSchema)(data, context, options)
         },
         defaultValues: {
+            hotelId: reservation?.hotelId ? reservation!.hotelId : undefined,
+            roomTypeId: reservation?.room.roomType.id ? reservation!.room.roomType.id : undefined,
+            clientId: reservation?.clientId ? reservation!.clientId : undefined,
             amountAdults: reservation?.amountAdults ?? 1,
             amountChildren: reservation?.amountChildren ?? 0,
             status: reservation?.status ?? false,
@@ -174,13 +148,10 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                                                 aria-expanded={openHotels}
                                                 className="w-[280px] justify-between"
                                                 disabled={disabled}
-                                                onClick={() => {
-                                                    getHotels((data) => setHotels(data))
-
-                                                }}
+                                                onClick={() => getHotels((data) => setHotels(data))}
                                             >
-                                                {hotelId
-                                                    ?  hotels?.find((hotel) => hotel.id == hotelId)?.name ?? reservation?.hotel.name
+                                                {field.value
+                                                    ? hotels?.find((hotel) => hotel.id == field.value)?.name ?? reservation?.hotel.name
                                                     : "Select hotel..."}
                                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                             </Button>
@@ -196,14 +167,14 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                                                             value={hotel.id.toString()}
                                                             onSelect={(currentValue) => {
                                                                 console.log(currentValue)
-                                                                setHotelId(Number(currentValue) === hotelId ? undefined : Number(currentValue))
+                                                                field.onChange(Number(currentValue) === field.value ? undefined : Number(currentValue))
                                                                 setOpenHotels(false)
                                                             }}
                                                         >
                                                             <Check
                                                                 className={cn(
                                                                     "mr-2 h-4 w-4",
-                                                                    hotelId === hotel.id ? "opacity-100" : "opacity-0"
+                                                                    field.value === hotel.id ? "opacity-100" : "opacity-0"
                                                                 )}
                                                             />
                                                             {hotel.name}
@@ -224,7 +195,7 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                 />
                 <FormField
                     control={form.control}
-                    name="roomId"
+                    name="roomTypeId"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Room</FormLabel>
@@ -239,13 +210,10 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                                                 aria-expanded={openRoomTypes}
                                                 className="w-[280px] justify-between"
                                                 disabled={disabled}
-                                                onClick={() => {
-                                                    getRoomTypes((data) => setRoomTypes(data))
-
-                                                }}
+                                                onClick={() => getRoomTypes((data) => setRoomTypes(data))}
                                             >
-                                                {roomTypeId
-                                                    ? roomTypes?.find((roomType) => roomType.id == roomTypeId)?.name ?? reservation?.room.roomType.name
+                                                {field.value
+                                                    ? roomTypes?.find((roomType) => roomType.id == field.value)?.name ?? reservation?.room.roomType.name
                                                     : "Select room..."}
                                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                             </Button>
@@ -260,14 +228,14 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                                                             key={roomType.id}
                                                             value={roomType.id.toString()}
                                                             onSelect={(currentValue) => {
-                                                                setRoomTypeId(Number(currentValue) === roomTypeId ? undefined : Number(currentValue))
+                                                                field.onChange(Number(currentValue) === field.value ? undefined : Number(currentValue))
                                                                 setOpenRoomTypes(false)
                                                             }}
                                                         >
                                                             <Check
                                                                 className={cn(
                                                                     "mr-2 h-4 w-4",
-                                                                    roomTypeId === roomType.id ? "opacity-100" : "opacity-0"
+                                                                    field.value === roomType.id ? "opacity-100" : "opacity-0"
                                                                 )}
                                                             />
                                                             {roomType.name}
@@ -302,13 +270,10 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                                                 aria-expanded={openClients}
                                                 className="w-[280px] justify-between"
                                                 disabled={disabled}
-                                                onClick={() => {
-                                                    getClients((data) => setClients(data))
-
-                                                }}
+                                                onClick={() => getClients((data) => setClients(data))}
                                             >
-                                                {clientId
-                                                    ? clients?.find((client) => client.id == clientId)?.lastName ?? reservation?.client.lastName
+                                                {field.value
+                                                    ? clients?.find((client) => client.id == field.value)?.lastName ?? reservation?.client.lastName
                                                     : "Select client..."}
                                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                             </Button>
@@ -323,14 +288,14 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                                                             key={client.id}
                                                             value={client.id.toString()}
                                                             onSelect={(currentValue) => {
-                                                                setClientId(Number(currentValue) === clientId ? undefined : Number(currentValue))
+                                                                field.onChange(Number(currentValue) === field.value ? undefined : Number(currentValue))
                                                                 setOpenClients(false)
                                                             }}
                                                         >
                                                             <Check
                                                                 className={cn(
                                                                     "mr-2 h-4 w-4",
-                                                                    clientId === client.id ? "opacity-100" : "opacity-0"
+                                                                    field.value === client.id ? "opacity-100" : "opacity-0"
                                                                 )}
                                                             />
                                                             {client.lastName}
@@ -404,7 +369,9 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                                 <FormDescription>
                                     The amount of nights.
                                 </FormDescription>
-                                <FormMessage />
+                                <div className="text-sm font-medium text-destructive">
+                                    {form.formState.errors.dateRange?.from?.message ?? form.formState.errors.dateRange?.to?.message }
+                                </div>
                             </FormItem>
                         )
                     }}
@@ -483,7 +450,7 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                             <FormLabel>Notes</FormLabel>
                             <FormControl>
                                 <div className="grid gap-2">
-                                    <Textarea className="disabled:cursor-default max-h-[500px]" placeholder="Type your notes here." {...field}  disabled={disabled} />
+                                    <Textarea className="disabled:cursor-default max-h-[500px]" placeholder="Type your notes here." {...field} disabled={disabled} />
                                 </div>
                             </FormControl>
                             <FormDescription>

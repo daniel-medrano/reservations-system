@@ -1,6 +1,6 @@
-import { ReactNode, useState } from "react"
+import { ReactNode, useContext, useState } from "react"
 import { Reservation, Hotel, RoomType, Client } from "@/interfaces/interfaces"
-import { format, addDays } from "date-fns"
+import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Minus, Plus, Calendar as CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 
@@ -28,7 +28,6 @@ import {
 
 import { Calendar } from "@/components/ui/calendar"
 
-import { DateRange } from "react-day-picker"
 import {
     Command,
     CommandEmpty,
@@ -39,21 +38,56 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { baseUrl } from "@/shared"
+import AuthContext from "@/context/AuthProvider"
+import DataTableContext from "@/context/DataTableProvider"
+
+interface ReservationRequest {
+    id?: number
+    checkInDate: Date
+    checkOutDate: Date
+    amountAdults: number
+    amountChildren: number
+    notes?: string
+    status: boolean
+    hotelId: number
+    roomTypeId: number
+    clientId: number
+}
+
+function createReservation(reservation: ReservationRequest, token: string) {
+    console.log(JSON.stringify(reservation))
+    const url = baseUrl + "/reservations"
+    fetch(url, {
+        method: "POST",
+        body: JSON.stringify(reservation),
+        headers: {
+            "accept": "text/plain",
+            "Authorization": "bearer " + token,
+            "Content-Type": "application/json"
+        }
+    })
+        .then((response) => response.json())
+        .then((data) => console.log(data))
+        .catch((error) => console.log(error))
+}
 
 
-const formSchema = z.object({
-    dateRange: z.object({
-        from: z.date({ required_error: "You must specify the date of the check-in."}),
-        to: z.date({ required_error: "You must specify the date of the check-out."})
-    }),
-    amountAdults: z.number(),
-    amountChildren: z.number(),
-    clientId: z.number().int(),
-    roomTypeId: z.number().int(),
-    hotelId: z.number().int(),
-    status: z.boolean(),
-    notes: z.string()
-})
+function updateReservation(reservation: ReservationRequest, token: string) {
+    console.log(JSON.stringify(reservation))
+    const url = baseUrl + "/reservations"
+    fetch(url, {
+        method: "PUT",
+        body: JSON.stringify(reservation),
+        headers: {
+            "accept": "text/plain",
+            "Authorization": "bearer " + token,
+            "Content-Type": "application/json"
+        }
+    })
+        .then((response) => response.json())
+        .then((data) => console.log(data))
+        .catch((error) => console.log(error))
+}
 
 function getHotels(handleHotelsData: (data: Hotel[]) => void) {
     const url = baseUrl + "/hotels"
@@ -82,6 +116,20 @@ function getClients(handleRoomTypesData: (data: Client[]) => void) {
         .then((data: Client[]) => handleRoomTypesData(data))
 }
 
+const formSchema = z.object({
+    dateRange: z.object({
+        from: z.date(),
+        to: z.date({ required_error: "You must specify the check-out date." })
+    }, { required_error: "You must specify the check-in and check-out dates." }),
+    amountAdults: z.number(),
+    amountChildren: z.number(),
+    clientId: z.number().int(),
+    roomTypeId: z.number().int(),
+    hotelId: z.number().int(),
+    status: z.boolean(),
+    notes: z.string().optional()
+})
+
 interface ReservationFormProps {
     disabled?: boolean
     reservation?: Reservation
@@ -89,6 +137,9 @@ interface ReservationFormProps {
 }
 
 export function ReservationForm({ reservation, button, disabled }: ReservationFormProps) {
+    const { changed, setChanged } = useContext(DataTableContext)
+    const { auth } = useContext(AuthContext)
+
     const [openRoomTypes, setOpenRoomTypes] = useState(false)
     const [openClients, setOpenClients] = useState(false)
     const [openHotels, setOpenHotels] = useState(false)
@@ -97,36 +148,52 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
     const [roomTypes, setRoomTypes] = useState<RoomType[]>()
     const [clients, setClients] = useState<Client[]>()
 
-    const [date, setDate] = useState<DateRange | undefined>(reservation == undefined ? undefined : {
-        from: reservation.checkInDate,
-        to: reservation.checkOutDate,
-    })
-
     const form = useForm<z.infer<typeof formSchema>>({
-        resolver: async (data, context, options) => {
-            data.dateRange = {
-                from: date?.from as Date,
-                to: date?.to as Date
-            }
-            console.log(options)
-            console.log(context)
-            console.log("formData", data)
-            console.log("validation result", await zodResolver(formSchema)(data, context, options))
-            return zodResolver(formSchema)(data, context, options)
-        },
+        resolver: zodResolver(formSchema),
         defaultValues: {
+            dateRange: reservation == undefined ? undefined : {
+                from: reservation.checkInDate,
+                to: reservation.checkOutDate
+            },
             hotelId: reservation?.hotelId ? reservation!.hotelId : undefined,
             roomTypeId: reservation?.room.roomType.id ? reservation!.room.roomType.id : undefined,
             clientId: reservation?.clientId ? reservation!.clientId : undefined,
             amountAdults: reservation?.amountAdults ?? 1,
             amountChildren: reservation?.amountChildren ?? 0,
             status: reservation?.status ?? false,
-            notes: reservation?.notes ?? ""
+            notes: reservation?.notes ?? undefined
         }
     })
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+        if (!reservation) {
+            createReservation({
+                checkInDate: values.dateRange.from,
+                checkOutDate: values.dateRange.to,
+                amountAdults: values.amountAdults,
+                amountChildren: values.amountChildren,
+                notes: values.notes == "" ? undefined : values.notes,
+                status: values.status,
+                hotelId: values.hotelId,
+                roomTypeId: values.roomTypeId,
+                clientId: values.clientId
+            }, auth!.token)
+        } else {
+            updateReservation({
+                id: reservation!.id,
+                checkInDate: values.dateRange.from,
+                checkOutDate: values.dateRange.to,
+                amountAdults: values.amountAdults,
+                amountChildren: values.amountChildren,
+                notes: values.notes == "" ? undefined : values.notes,
+                status: values.status,
+                hotelId: values.hotelId,
+                roomTypeId: values.roomTypeId,
+                clientId: values.clientId
+            }, auth!.token)
+        }
+
+        setChanged(!changed)
     }
 
     return (
@@ -317,7 +384,7 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                 <FormField
                     control={form.control}
                     name="dateRange"
-                    render={() => {
+                    render={({ field }) => {
                         return (
                             <FormItem>
                                 <FormLabel>Nights</FormLabel>
@@ -330,19 +397,19 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                                                     variant={"outline"}
                                                     className={cn(
                                                         "w-[280px] justify-start text-left font-normal",
-                                                        !date && "text-muted-foreground"
+                                                        !field.value && "text-muted-foreground"
                                                     )}
                                                     disabled={disabled}
                                                 >
                                                     <CalendarIcon className="mr-2 h-4 w-4" />
-                                                    {date?.from ? (
-                                                        date.to ? (
+                                                    {field.value?.from ? (
+                                                        field.value.to ? (
                                                             <>
-                                                                {format(date.from, "LLL dd, y")} -{" "}
-                                                                {format(date.to, "LLL dd, y")}
+                                                                {format(field.value.from, "LLL dd, y")} -{" "}
+                                                                {format(field.value.to, "LLL dd, y")}
                                                             </>
                                                         ) : (
-                                                            format(date.from, "LLL dd, y")
+                                                            format(field.value.from, "LLL dd, y")
                                                         )
                                                     ) : (
                                                         <span>Pick a date</span>
@@ -353,11 +420,11 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                                                 <Calendar
                                                     initialFocus
                                                     mode="range"
-                                                    defaultMonth={date?.from}
-                                                    selected={date}
+                                                    defaultMonth={field.value?.from}
+                                                    selected={field.value}
                                                     onSelect={(range) => {
                                                         if (range?.from != undefined && range.from.getTime() == range.to?.getTime()) return
-                                                        setDate(range)
+                                                        field.onChange(range)
                                                     }}
                                                     numberOfMonths={2}
                                                     disabled={(day) => day < new Date(Date.UTC((new Date()).getFullYear(), (new Date()).getMonth(), (new Date()).getDate()))}
@@ -370,7 +437,7 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                                     The amount of nights.
                                 </FormDescription>
                                 <div className="text-sm font-medium text-destructive">
-                                    {form.formState.errors.dateRange?.from?.message ?? form.formState.errors.dateRange?.to?.message }
+                                    {form.formState.errors.dateRange?.message ?? form.formState.errors.dateRange?.to?.message}
                                 </div>
                             </FormItem>
                         )

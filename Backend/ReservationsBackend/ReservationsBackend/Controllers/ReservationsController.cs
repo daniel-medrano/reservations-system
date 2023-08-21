@@ -72,14 +72,27 @@ namespace ReservationsBackend.Controllers
             return Ok(reservation);
         }
         [HttpPost]
-        public async Task<ActionResult<List<Reservation>>> CreateReservation(Reservation reservation)
+        public async Task<ActionResult<Reservation>> CreateReservation(ReservationDTO reservationRequest)
         {
-            _context.Reservations.Add(reservation);
+            // TODO: Find available rooms according to room type.
+            var newReservation = new Reservation
+            {
+                CheckOutDate = reservationRequest.CheckOutDate,
+                CheckInDate = reservationRequest.CheckInDate,
+                AmountAdults = reservationRequest.AmountAdults,
+                AmountChildren = reservationRequest.AmountChildren,
+                Notes = reservationRequest?.Notes,
+                Status = reservationRequest.Status,
+                HotelId = reservationRequest.HotelId,
+                ClientId = reservationRequest.ClientId,
+                RoomId = 1
+            };
+           _context.Reservations.Add(newReservation);
             await _context.SaveChangesAsync();
-            return Ok(reservation);
+            return Ok(newReservation);
         }
         [HttpPut]
-        public async Task<ActionResult<List<Reservation>>> UpdateReservation(Reservation updatedReservation)
+        public async Task<ActionResult<List<Reservation>>> UpdateReservation(ReservationDTO updatedReservation)
         {
             var reservation = await _context.Reservations
                 .Include(reservation => reservation.Hotel)
@@ -94,6 +107,8 @@ namespace ReservationsBackend.Controllers
             reservation.AmountChildren = updatedReservation.AmountChildren;
             reservation.Notes = updatedReservation.Notes;
             reservation.Status = updatedReservation.Status;
+            reservation.ClientId = updatedReservation.ClientId;
+            reservation.HotelId = updatedReservation.HotelId;
             await _context.SaveChangesAsync();
             return Ok(reservation);
         }

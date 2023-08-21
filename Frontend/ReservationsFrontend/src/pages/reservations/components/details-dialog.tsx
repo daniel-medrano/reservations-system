@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 
 import { Plus, MoreHorizontal } from "lucide-react"
 
@@ -24,16 +24,35 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Reservation } from "@/interfaces/interfaces"
 import { ReservationForm } from "./reservation-form"
+import AuthContext from "@/context/AuthProvider"
+import DataTableContext from "@/context/DataTableProvider"
+import { baseUrl } from "@/shared"
+
+function deleteReservation(id: number, token: string) {
+    const url = baseUrl + "/reservations/" + id
+    fetch(url, {
+        method: "DELETE",
+        headers: {
+            "accept": "text/plain",
+            "Authorization": "bearer " + token,
+        }
+    })
+        .then((response) => response.json())
+        .then((data) => console.log(data))
+        .catch((error) => console.log(error))
+}
 
 interface DetailsDialogProps {
     reservation?: Reservation
 }
 
 export function DetailsDialog({ reservation }: DetailsDialogProps) {
+    const { changed, setChanged } = useContext(DataTableContext)
+    const { auth } = useContext(AuthContext)
     const [mode, setMode] = useState<"view" | "add" | "modify" | "delete">("add")
-
+    const [open, setOpen] = useState(false)
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             {
                 reservation == null
                     ? <DialogTrigger asChild>
@@ -82,7 +101,9 @@ export function DetailsDialog({ reservation }: DetailsDialogProps) {
                             disabled={mode === "view" ? true : false}
                             reservation={mode != "add" ? reservation : undefined}
                             button={<DialogFooter>
-                                <Button type="submit">Save</Button>
+                                <Button type="submit" onClick={() => {
+                                    setOpen(false)
+                                }}>Save</Button>
                             </DialogFooter>
                             }
                         />
@@ -97,7 +118,11 @@ export function DetailsDialog({ reservation }: DetailsDialogProps) {
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
-                            <Button variant="destructive">Delete</Button>
+                            <Button variant="destructive" onClick={() => {
+                                deleteReservation(reservation!.id, auth!.token)
+                                setChanged(!changed)
+                                setOpen(false)
+                            }}>Delete</Button>
                         </DialogFooter>
                     </DialogContent>}
         </Dialog>

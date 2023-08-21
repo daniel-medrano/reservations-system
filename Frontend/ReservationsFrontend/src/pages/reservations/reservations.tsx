@@ -10,6 +10,7 @@ import {
 import { baseUrl } from "@/shared"
 import AuthContext from "@/context/AuthProvider"
 import { Client, Hotel, Reservation, Room } from "@/interfaces/interfaces"
+import DataTableContext, { DataTableProvider } from "@/context/DataTableProvider"
 
 interface RawReservation {
     id: number
@@ -38,41 +39,8 @@ interface Reservations {
     totalCount: number
 }
 
-
-// function getData(query: string, sortBy: string, pageIndex: number, pageSize: number): DataResponse {
-//     let reservations = [
-//         {
-//             id: 1,
-//             creationDate: new Date("09-08-2023"),
-//             checkInDate: new Date("08-12-2023"),
-//             checkOutDate: new Date("08-14-2023"),
-//             amountAdults: 2,
-//             amountChildren: 2,
-//             notes: "This is a test.",
-//             status: true
-//         }
-//     ]
-
-//     reservations = reservations.filter((reservation) => reservation.amountAdults.toString().includes(query) || reservation.amountChildren.toString().includes(query))
-
-//     switch (sortBy) {
-//         case "creationDate":
-//             reservations.sort((a, b) => Number(a.creationDate) - Number(b.creationDate))
-//             break;
-//         case "-creationDate":
-//             reservations.sort((a, b) => Number(b.creationDate) - Number(a.creationDate))
-//             break;
-//         default:
-//             reservations.sort((a, b) => Number(a.id) - Number(b.id))
-//             break;
-//     }
-//     return {
-//         reservations: reservations.slice((pageIndex + 1) * pageSize - pageSize, (pageIndex + 1) * pageSize),
-//         totalCount: reservations.length
-//     }
-// }
-
 export default function Reservations() {
+    const { changed } = useContext(DataTableContext)
     const [data, setData] = useState<Reservations>()
     const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
     const [sorting, setSorting] = useState<SortingState>([])
@@ -118,7 +86,7 @@ export default function Reservations() {
                         totalCount: data.totalCount
                     })
                     : null)
-    }, [globalFilter, sortBy, pageIndex, pageSize])
+    }, [changed, globalFilter, sortBy, pageIndex, pageSize])
 
     return (
         <>
@@ -146,7 +114,6 @@ export default function Reservations() {
                         />
                         : <span>An error occured, could not fetch data.</span>
                     }
-
                 </div>
             </div>
         </>

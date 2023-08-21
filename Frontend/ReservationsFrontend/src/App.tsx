@@ -17,30 +17,32 @@ import Chatbot from './pages/chatbot/chatbot'
 import { AuthProvider } from './context/AuthProvider'
 import RequireAuth from './pages/require-auth'
 import { Unauthorized } from './pages/unauthorized/unauthorized'
+import { DataTableProvider } from './context/DataTableProvider'
 
 function App() {
-  console.log("App")
   return (
     <>
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/rooms" element={<Rooms />} />
-              <Route path="/payments" element={<Payment />} />
-              <Route path="/chatbot" element={<Chatbot />} />
-              <Route path="/unauthorized" element={<Unauthorized />} />
-              <Route element={<RequireAuth allowedRoles={["Employee", "Admin"]} />}>
-                <Route path='/reservations' element={<Reservations />} />
+          <DataTableProvider>
+            <Routes>
+              <Route element={<Layout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/rooms" element={<Rooms />} />
+                <Route path="/payments" element={<Payment />} />
+                <Route path="/chatbot" element={<Chatbot />} />
+                <Route path="/unauthorized" element={<Unauthorized />} />
+                <Route element={<RequireAuth allowedRoles={["Employee", "Admin"]} />}>
+                  <Route path='/reservations' element={<Reservations />} />
+                </Route>
               </Route>
-            </Route>
-            <Route element={<LayoutWithoutNavbar />}>
-              <Route path='/sign-in' element={<SignIn />} />
-              <Route path='/sign-up' element={<SignUp />} />
-            </Route>
-          </Routes>
+              <Route element={<LayoutWithoutNavbar />}>
+                <Route path='/sign-in' element={<SignIn />} />
+                <Route path='/sign-up' element={<SignUp />} />
+              </Route>
+            </Routes>
+          </DataTableProvider>
         </AuthProvider>
       </BrowserRouter>
     </>

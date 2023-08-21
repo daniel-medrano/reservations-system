@@ -1,8 +1,8 @@
 import { ReactNode, useState } from "react"
-import { Reservation } from "./columns"
+import { Reservation, Hotel, RoomType, Client } from "@/interfaces/interfaces"
 import { format, addDays } from "date-fns"
 import { cn } from "@/lib/utils"
-import { Minus, Plus, Calendar as CalendarIcon } from "lucide-react"
+import { Minus, Plus, Calendar as CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -29,6 +29,16 @@ import {
 import { Calendar } from "@/components/ui/calendar"
 
 import { DateRange } from "react-day-picker"
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem
+} from "@/components/ui/command"
+import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
+import { baseUrl } from "@/shared"
 
 
 const formSchema = z.object({
@@ -37,8 +47,66 @@ const formSchema = z.object({
         to: z.date()
     }),
     amountAdults: z.number(),
-    amountChildren: z.number()
+    amountChildren: z.number(),
+    clientId: z.number().int(),
+    roomId: z.number().int(),
+    hotelId: z.number().int(),
+    status: z.boolean(),
+    notes: z.string()
 })
+
+const frameworks = [
+    {
+        value: "next.js",
+        label: "Next.js",
+    },
+    {
+        value: "sveltekit",
+        label: "SvelteKit",
+    },
+    {
+        value: "nuxt.js",
+        label: "Nuxt.js",
+    },
+    {
+        value: "remix",
+        label: "Remix",
+    },
+    {
+        value: "astro",
+        label: "Astro",
+    },
+]
+
+
+
+
+function getHotels(handleHotelsData: (data: Hotel[]) => void) {
+    const url = baseUrl + "/hotels"
+    fetch(url, {
+        method: "GET"
+    })
+        .then((response) => response.json())
+        .then((data: Hotel[]) => handleHotelsData(data))
+}
+
+function getRoomTypes(handleRoomTypesData: (data: RoomType[]) => void) {
+    const url = baseUrl + "/roomtypes"
+    fetch(url, {
+        method: "GET"
+    })
+        .then((response) => response.json())
+        .then((data: RoomType[]) => handleRoomTypesData(data))
+}
+
+function getClients(handleRoomTypesData: (data: Client[]) => void) {
+    const url = baseUrl + "/clients"
+    fetch(url, {
+        method: "GET"
+    })
+        .then((response) => response.json())
+        .then((data: Client[]) => handleRoomTypesData(data))
+}
 
 interface ReservationFormProps {
     disabled?: boolean
@@ -47,7 +115,22 @@ interface ReservationFormProps {
 }
 
 export function ReservationForm({ reservation, button, disabled }: ReservationFormProps) {
-    const [date, setDate] = useState<DateRange | undefined>( reservation == undefined ? undefined : {
+    const [openRoomTypes, setOpenRoomTypes] = useState(false)
+    const [openClients, setOpenClients] = useState(false)
+    const [openHotels, setOpenHotels] = useState(false)
+
+    const [hotels, setHotels] = useState<Hotel[]>()
+    const [roomTypes, setRoomTypes] = useState<RoomType[]>()
+    const [clients, setClients] = useState<Client[]>()
+
+    const [hotelId, setHotelId] = useState(reservation?.hotelId ? reservation!.hotelId : undefined)
+    const [roomTypeId, setRoomTypeId] = useState(reservation?.roomId ? reservation!.roomId : undefined)
+    const [clientId, setClientId] = useState(reservation?.clientId ? reservation!.clientId : undefined)
+    console.log("hotelId", hotelId)
+    console.log(hotels)
+
+
+    const [date, setDate] = useState<DateRange | undefined>(reservation == undefined ? undefined : {
         from: reservation.checkInDate,
         to: reservation.checkOutDate,
     })
@@ -61,9 +144,10 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
             return zodResolver(formSchema)(data, context, options)
         },
         defaultValues: {
-            dateRange: { from: reservation?.checkInDate, to: reservation?.checkOutDate },
             amountAdults: reservation?.amountAdults ?? 1,
-            amountChildren: reservation?.amountChildren ?? 0
+            amountChildren: reservation?.amountChildren ?? 0,
+            status: reservation?.status ?? false,
+            notes: reservation?.notes ?? ""
         }
     })
 
@@ -74,7 +158,197 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <FormField
+                    control={form.control}
+                    name="hotelId"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Hotel</FormLabel>
+                            <FormControl>
+                                <div className={cn("grid gap-2")}>
+                                    <Popover open={openHotels} onOpenChange={setOpenHotels}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={openHotels}
+                                                className="w-[280px] justify-between"
+                                                disabled={disabled}
+                                                onClick={() => {
+                                                    getHotels((data) => setHotels(data))
 
+                                                }}
+                                            >
+                                                {hotelId
+                                                    ?  hotels?.find((hotel) => hotel.id == hotelId)?.name ?? reservation?.hotel.name
+                                                    : "Select hotel..."}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[280px] p-0">
+                                            <Command>
+                                                <CommandInput placeholder="Search hotel..." />
+                                                <CommandEmpty>No hotel found.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {!hotels ? ("Loading data...") : hotels.map((hotel) => (
+                                                        <CommandItem
+                                                            key={hotel.id}
+                                                            value={hotel.id.toString()}
+                                                            onSelect={(currentValue) => {
+                                                                console.log(currentValue)
+                                                                setHotelId(Number(currentValue) === hotelId ? undefined : Number(currentValue))
+                                                                setOpenHotels(false)
+                                                            }}
+                                                        >
+                                                            <Check
+                                                                className={cn(
+                                                                    "mr-2 h-4 w-4",
+                                                                    hotelId === hotel.id ? "opacity-100" : "opacity-0"
+                                                                )}
+                                                            />
+                                                            {hotel.name}
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                            </FormControl>
+                            <FormDescription>
+                                The hotel where the reservation will take place.
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="roomId"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Room</FormLabel>
+                            <FormControl>
+                                <div className={cn("grid gap-2")}>
+
+                                    <Popover open={openRoomTypes} onOpenChange={setOpenRoomTypes}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={openRoomTypes}
+                                                className="w-[280px] justify-between"
+                                                disabled={disabled}
+                                                onClick={() => {
+                                                    getRoomTypes((data) => setRoomTypes(data))
+
+                                                }}
+                                            >
+                                                {roomTypeId
+                                                    ? roomTypes?.find((roomType) => roomType.id == roomTypeId)?.name ?? reservation?.room.roomType.name
+                                                    : "Select room..."}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[280px] p-0">
+                                            <Command>
+                                                <CommandInput placeholder="Search room..." />
+                                                <CommandEmpty>No room found.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {!roomTypes ? ("Loading data...") : roomTypes.map((roomType) => (
+                                                        <CommandItem
+                                                            key={roomType.id}
+                                                            value={roomType.id.toString()}
+                                                            onSelect={(currentValue) => {
+                                                                setRoomTypeId(Number(currentValue) === roomTypeId ? undefined : Number(currentValue))
+                                                                setOpenRoomTypes(false)
+                                                            }}
+                                                        >
+                                                            <Check
+                                                                className={cn(
+                                                                    "mr-2 h-4 w-4",
+                                                                    roomTypeId === roomType.id ? "opacity-100" : "opacity-0"
+                                                                )}
+                                                            />
+                                                            {roomType.name}
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                            </FormControl>
+                            <FormDescription>
+                                The room of the reservation.
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="clientId"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Client</FormLabel>
+                            <FormControl>
+                                <div className={cn("grid gap-2")}>
+                                    <Popover open={openClients} onOpenChange={setOpenClients}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={openClients}
+                                                className="w-[280px] justify-between"
+                                                disabled={disabled}
+                                                onClick={() => {
+                                                    getClients((data) => setClients(data))
+
+                                                }}
+                                            >
+                                                {clientId
+                                                    ? clients?.find((client) => client.id == clientId)?.lastName ?? reservation?.client.lastName
+                                                    : "Select client..."}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[280px] p-0">
+                                            <Command>
+                                                <CommandInput placeholder="Search client..." />
+                                                <CommandEmpty>No framework found.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {!clients ? ("Loading data...") : clients.map((client) => (
+                                                        <CommandItem
+                                                            key={client.id}
+                                                            value={client.id.toString()}
+                                                            onSelect={(currentValue) => {
+                                                                setClientId(Number(currentValue) === clientId ? undefined : Number(currentValue))
+                                                                setOpenClients(false)
+                                                            }}
+                                                        >
+                                                            <Check
+                                                                className={cn(
+                                                                    "mr-2 h-4 w-4",
+                                                                    clientId === client.id ? "opacity-100" : "opacity-0"
+                                                                )}
+                                                            />
+                                                            {client.lastName}
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                            </FormControl>
+                            <FormDescription>
+                                The client making the reservation.
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <FormField
                     control={form.control}
                     name="dateRange"
@@ -90,7 +364,7 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                                                     id="date"
                                                     variant={"outline"}
                                                     className={cn(
-                                                        "w-full justify-start text-left font-normal",
+                                                        "w-[280px] justify-start text-left font-normal",
                                                         !date && "text-muted-foreground"
                                                     )}
                                                     disabled={disabled}
@@ -178,6 +452,42 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                             </FormControl>
                             <FormDescription>
                                 The amount of children.
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Status</FormLabel>
+                            <FormControl>
+                                <div className="grid gap-2">
+                                    <Switch className="disabled:cursor-default" checked={field.value} disabled={disabled} onCheckedChange={(checked) => field.onChange(checked)} />
+                                </div>
+                            </FormControl>
+                            <FormDescription>
+                                The status of the reservation.
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="notes"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Notes</FormLabel>
+                            <FormControl>
+                                <div className="grid gap-2">
+                                    <Textarea className="disabled:cursor-default max-h-[500px]" placeholder="Type your notes here." {...field}  disabled={disabled} />
+                                </div>
+                            </FormControl>
+                            <FormDescription>
+                                The notes of the reservation in case there are any extra details to be considered.
                             </FormDescription>
                             <FormMessage />
                         </FormItem>

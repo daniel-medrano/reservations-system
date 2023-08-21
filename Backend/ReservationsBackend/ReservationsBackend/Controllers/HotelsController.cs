@@ -10,7 +10,7 @@ using ReservationsBackend.Models;
 
 namespace ReservationsBackend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class HotelsController : ControllerBase
     {
@@ -21,6 +21,32 @@ namespace ReservationsBackend.Controllers
             _context = context;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<Client>>> GetAllHotels(string query = "", string sortBy = "", int page = 1, int pageSize = 10)
+        {
+
+            var result = _context.Hotels
+                .Where(hotel =>
+                    hotel.Name.Contains(query));
+
+            switch (sortBy)
+            {
+                case "name":
+                    result = result.OrderBy(hotel => hotel.Name);
+                    break;
+                case "-name":
+                    result = result.OrderByDescending(hotel => hotel.Name);
+                    break;
+                default:
+                    result = result.OrderBy(client => client.Id);
+                    break;
+            }
+
+            result = result.Skip((page - 1) * pageSize).Take(pageSize);
+            var clients = await result.ToListAsync();
+            return Ok(result);
+
+        }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Hotel>> GetSingleHotel(int id)

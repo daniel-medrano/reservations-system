@@ -26,6 +26,7 @@ namespace ReservationsBackend.Controllers
                 .Include(reservation => reservation.Hotel)
                 .Include(reservation => reservation.Client)
                 .Include(reservation => reservation.Room)
+                .ThenInclude(room => room.RoomType)
                 .Where(reservation =>
                     reservation.Room!.RoomType.Name.Contains(query) ||
                     reservation.Room!.Number.ToString().Contains(query));

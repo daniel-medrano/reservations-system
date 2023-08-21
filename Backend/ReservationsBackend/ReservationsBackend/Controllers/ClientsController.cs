@@ -4,7 +4,7 @@ using System.Drawing.Printing;
 
 namespace ReservationsBackend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class ClientsController : ControllerBase
     {
@@ -21,9 +21,10 @@ namespace ReservationsBackend.Controllers
        public async Task<ActionResult<List<Client>>> GetAllClients(string query = "", string sortBy= "", int page = 1, int pageSize = 10) 
        {
 
-            var result = _context.Clients
+            var result = _context.Clients.Include(client => client.User)
                 .Where(client =>
-                    client.Id.ToString().Contains(query));
+                    client.FirstName.Contains(query) ||
+                    client.LastName.Contains(query));
 
             switch (sortBy)
             {

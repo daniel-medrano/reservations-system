@@ -22,7 +22,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import { Reservation } from "./columns"
+import { Reservation } from "@/interfaces/interfaces"
 import { ReservationForm } from "./reservation-form"
 
 interface DetailsDialogProps {
@@ -69,7 +69,7 @@ export function DetailsDialog({ reservation }: DetailsDialogProps) {
             }
             {
                 mode != "delete"
-                    ? <DialogContent>
+                    ? <DialogContent className="lg:max-w-screen-lg overflow-y-scroll max-h-[80%]">
                         <DialogHeader>
                             <DialogTitle>
                                 {mode.replace(mode[0], mode[0].toUpperCase())} reservation

@@ -5,17 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 
 import { DetailsDialog } from "./details-dialog"
-
-export interface Reservation {
-    id: number
-    checkInDate: Date
-    checkOutDate: Date
-    creationDate: Date
-    amountAdults: number
-    amountChildren: number
-    notes: string
-    status: boolean
-}
+import { Reservation } from "@/interfaces/interfaces"
 
 export const columns: ColumnDef<Reservation>[] = [
     {

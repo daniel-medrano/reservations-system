@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ReservationsBackend.Models
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
-    public class RoomTypeController : ControllerBase
+    public class RoomTypesController : ControllerBase
     {
 
         private readonly DataContext _context;
 
-        public RoomTypeController(DataContext context)
+        public RoomTypesController(DataContext context)
         {
             _context = context;
         }

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react"
 
-import { Reservation, columns } from "./components/columns"
+import { columns } from "./components/columns"
 import { DataTable } from "./components/data-table"
 
 import {
@@ -9,8 +9,9 @@ import {
 } from "@tanstack/react-table"
 import { baseUrl } from "@/shared"
 import AuthContext from "@/context/AuthProvider"
+import { Client, Hotel, Reservation, Room } from "@/interfaces/interfaces"
 
-interface ReservationResponse {
+interface RawReservation {
     id: number
     checkInDate: string
     checkOutDate: string
@@ -19,14 +20,20 @@ interface ReservationResponse {
     amountChildren: number
     notes: string
     status: boolean
+    hotelId: number
+    hotel: Hotel
+    roomId: number
+    room: Room
+    clientId: number
+    client: Client
 }
 
-interface DataResponse {
-    reservations: ReservationResponse[]
+interface RawReservations {
+    reservations: RawReservation[]
     totalCount: number
 }
 
-interface Data {
+interface Reservations {
     reservations: Reservation[]
     totalCount: number
 }
@@ -66,7 +73,7 @@ interface Data {
 // }
 
 export default function Reservations() {
-    const [data, setData] = useState<Data>()
+    const [data, setData] = useState<Reservations>()
     const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
     const [sorting, setSorting] = useState<SortingState>([])
     const [globalFilter, setGlobalFilter] = useState("")
@@ -97,14 +104,14 @@ export default function Reservations() {
             }
         })
             .then((response) => response.json())
-            .then((data: DataResponse) =>
+            .then((data: RawReservations) =>
                 data.totalCount
                     ? setData({
                         reservations: data.reservations.map((reservation) => {
                             return {
                                 ...reservation,
-                                creationDate: new Date(reservation.creationDate), 
-                                checkInDate: new Date(reservation.checkInDate), 
+                                creationDate: new Date(reservation.creationDate),
+                                checkInDate: new Date(reservation.checkInDate),
                                 checkOutDate: new Date(reservation.checkOutDate)
                             }
                         }),

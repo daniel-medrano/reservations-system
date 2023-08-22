@@ -6,8 +6,8 @@ import { Link } from 'react-router-dom';
 export function Home (){
     return (
     <>
-    <div className="bg-gray-100  flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-lg w-full">
+    <div className="pt-4 px-4  bg-gray-100  flex items-center">
+        <div className="p-4 bg-white rounded-lg shadow-lg">
             <div className="pt-4 grid grid-cols-2">
                 <div className="pl-8 col-span-1">
                     <h1 className="text-3xl font-semibold mb-4">Welcome to Hotel Las Mareas</h1>
@@ -66,11 +66,13 @@ export function Home (){
         </div>
     </div>
     
-    <div className="rounded-lg">
-        <img 
-        src= {roca} 
-        className="rounded-md"
-        />
+    <div className="pt-4 bg-gray-100  flex items-center justify-center">
+        <div className="pt-4 rounded-lg">
+            <img 
+            src= {roca} 
+            className="rounded-md"
+            />
+        </div>
     </div>
     </>
     )

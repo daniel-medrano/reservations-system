@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 
 import { DetailsDialog } from "./details-dialog"
-import { Reservation } from "@/interfaces/interfaces"
+import { Client, Hotel, Reservation } from "@/interfaces/interfaces"
 
-export const columns: ColumnDef<Reservation>[] = [
+export const columns: ColumnDef<Client>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -20,23 +20,34 @@ export const columns: ColumnDef<Reservation>[] = [
         enableHiding: false
     },
     {
-        accessorKey: "creationDate",
+        accessorKey: "lastName",
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-                    Created at
+                    Last name
                     <ArrowUpDown className="ml-2 h-4 w-4"/>
                 </Button>
             )
         }
     },
     {
-        accessorKey: "checkInDate",
-        header: "Check-in"
+        accessorKey: "firstName",
+        header: ({ column }) => {
+            return (
+                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    First name
+                    <ArrowUpDown className="ml-2 h-4 w-4"/>
+                </Button>
+            )
+        }
     },
     {
-        accessorKey: "checkOutDate",
-        header: "Check-out"
+        accessorKey: "phone",
+        header: "Phone"
+    },
+    {
+        accessorKey: "email",
+        header: "Email"
     },
     {
         accessorKey: "status",
@@ -47,20 +58,12 @@ export const columns: ColumnDef<Reservation>[] = [
         } // Example
     },
     {
-        accessorKey: "amountAdults",
-        header: "Adults"
-    },
-    {
-        accessorKey: "amountChildren",
-        header: "Children"
-    },
-    {
         id: "actions",
         cell: ({ row }) => {
-            const reservation = row.original
+            const hotel = row.original
 
             return (
-                <DetailsDialog reservation={reservation}/>
+                <div></div>
             )
         }
     }

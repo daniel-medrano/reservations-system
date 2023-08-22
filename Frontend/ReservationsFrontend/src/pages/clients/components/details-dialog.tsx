@@ -58,7 +58,7 @@ export function DetailsDialog({ reservation }: DetailsDialogProps) {
                     ? <DialogTrigger asChild>
                         <Button>
                             <Plus className="md:mr-2 h-4 w-4" />
-                            <span className="hidden md:inline-block">Add reservation</span>
+                            <span className="hidden md:inline-block">Add client</span>
                         </Button>
                     </DialogTrigger>
                     : <DropdownMenu>

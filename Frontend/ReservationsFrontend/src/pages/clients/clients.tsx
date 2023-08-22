@@ -10,38 +10,31 @@ import {
 import { baseUrl } from "@/shared"
 import AuthContext from "@/context/AuthProvider"
 import { Client, Hotel, Reservation, Room } from "@/interfaces/interfaces"
-import DataTableContext, { DataTableProvider } from "@/context/DataTableProvider"
+import DataTableContext from "@/context/DataTableProvider"
+import { error } from "console"
 
-interface RawReservation {
+interface RawClient {
     id: number
-    checkInDate: string
-    checkOutDate: string
+    firstName: string
+    lastName: string
+    email: string
+    phone: number
     creationDate: string
-    amountAdults: number
-    amountChildren: number
-    notes: string
-    status: boolean
-    hotelId: number
-    hotel: Hotel
-    roomId: number
-    room: Room
-    clientId: number
-    client: Client
 }
 
-interface RawReservations {
-    reservations: RawReservation[]
+interface RawClients {
+    clients: RawClient[]
     totalCount: number
 }
 
-interface Reservations {
-    reservations: Reservation[]
+interface Clients {
+    clients: Client[]
     totalCount: number
 }
 
-export default function Reservations() {
+export default function Clients() {
     const { changed } = useContext(DataTableContext)
-    const [data, setData] = useState<Reservations>()
+    const [data, setData] = useState<Clients>()
     const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
     const [sorting, setSorting] = useState<SortingState>([])
     const [globalFilter, setGlobalFilter] = useState("")
@@ -64,7 +57,7 @@ export default function Reservations() {
             params.delete(value)
         })
 
-        const url = baseUrl + "/reservations?" + params
+        const url = baseUrl + "/clients?" + params
         fetch(url, {
             method: "GET",
             headers: {
@@ -72,30 +65,27 @@ export default function Reservations() {
             }
         })
             .then((response) => response.json())
-            .then((data: RawReservations) =>
+            .then((data: RawClients) => {
+                console.log(data)
                 data.totalCount
                     ? setData({
-                        reservations: data.reservations.map((reservation) => {
-                            return {
-                                ...reservation,
-                                creationDate: new Date(reservation.creationDate),
-                                checkInDate: new Date(reservation.checkInDate),
-                                checkOutDate: new Date(reservation.checkOutDate)
-                            }
-                        }),
+                        clients: data.clients.map((client) => ({
+                            ...client,
+                            creationDate: new Date(client.creationDate)
+                        })),
                         totalCount: data.totalCount
                     })
-                    : null)
+                    : null}).catch((error) => console.log(error))
     }, [changed, globalFilter, sortBy, pageIndex, pageSize])
-
+    console.log(data)
     return (
         <>
             <div className="h-full flex-1 flex-col space-y-8 py-8 md:flex">
                 <div className="flex items-center justify-between space-y-2">
                     <div>
-                        <h2 className="text-2xl font-bold tracking-tight">Reservations</h2>
+                        <h2 className="text-2xl font-bold tracking-tight">Clients</h2>
                         <p className="text-muted-foreground">
-                            Here&apos;s a list of all reservations
+                            Here&apos;s a list of all clients
                         </p>
                     </div>
                 </div>
@@ -103,7 +93,7 @@ export default function Reservations() {
                     {data
                         ? <DataTable
                             columns={columns}
-                            data={data.reservations}
+                            data={data.clients}
                             totalCount={data.totalCount}
                             pagination={{ pageIndex, pageSize }}
                             setPagination={setPagination}

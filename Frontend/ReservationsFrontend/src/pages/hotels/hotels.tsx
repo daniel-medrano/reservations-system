@@ -10,38 +10,17 @@ import {
 import { baseUrl } from "@/shared"
 import AuthContext from "@/context/AuthProvider"
 import { Client, Hotel, Reservation, Room } from "@/interfaces/interfaces"
-import DataTableContext, { DataTableProvider } from "@/context/DataTableProvider"
+import DataTableContext from "@/context/DataTableProvider"
 
-interface RawReservation {
-    id: number
-    checkInDate: string
-    checkOutDate: string
-    creationDate: string
-    amountAdults: number
-    amountChildren: number
-    notes: string
-    status: boolean
-    hotelId: number
-    hotel: Hotel
-    roomId: number
-    room: Room
-    clientId: number
-    client: Client
-}
 
-interface RawReservations {
-    reservations: RawReservation[]
+interface Hotels {
+    hotels: Hotel[]
     totalCount: number
 }
 
-interface Reservations {
-    reservations: Reservation[]
-    totalCount: number
-}
-
-export default function Reservations() {
+export default function Hotels() {
     const { changed } = useContext(DataTableContext)
-    const [data, setData] = useState<Reservations>()
+    const [data, setData] = useState<Hotels>()
     const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
     const [sorting, setSorting] = useState<SortingState>([])
     const [globalFilter, setGlobalFilter] = useState("")
@@ -64,7 +43,7 @@ export default function Reservations() {
             params.delete(value)
         })
 
-        const url = baseUrl + "/reservations?" + params
+        const url = baseUrl + "/hotels?" + params
         fetch(url, {
             method: "GET",
             headers: {
@@ -72,19 +51,9 @@ export default function Reservations() {
             }
         })
             .then((response) => response.json())
-            .then((data: RawReservations) =>
+            .then((data: Hotels) =>
                 data.totalCount
-                    ? setData({
-                        reservations: data.reservations.map((reservation) => {
-                            return {
-                                ...reservation,
-                                creationDate: new Date(reservation.creationDate),
-                                checkInDate: new Date(reservation.checkInDate),
-                                checkOutDate: new Date(reservation.checkOutDate)
-                            }
-                        }),
-                        totalCount: data.totalCount
-                    })
+                    ? setData(data)
                     : null)
     }, [changed, globalFilter, sortBy, pageIndex, pageSize])
 
@@ -93,9 +62,9 @@ export default function Reservations() {
             <div className="h-full flex-1 flex-col space-y-8 py-8 md:flex">
                 <div className="flex items-center justify-between space-y-2">
                     <div>
-                        <h2 className="text-2xl font-bold tracking-tight">Reservations</h2>
+                        <h2 className="text-2xl font-bold tracking-tight">Hotels</h2>
                         <p className="text-muted-foreground">
-                            Here&apos;s a list of all reservations
+                            Here&apos;s a list of all hotels
                         </p>
                     </div>
                 </div>
@@ -103,7 +72,7 @@ export default function Reservations() {
                     {data
                         ? <DataTable
                             columns={columns}
-                            data={data.reservations}
+                            data={data.hotels}
                             totalCount={data.totalCount}
                             pagination={{ pageIndex, pageSize }}
                             setPagination={setPagination}

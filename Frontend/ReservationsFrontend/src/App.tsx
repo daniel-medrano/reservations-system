@@ -13,30 +13,43 @@ import Layout from './pages/layout'
 import LayoutWithoutNavbar from './pages/layout-without-navbar'
 import Reservations from './pages/reservations/reservations'
 import Chatbot from './pages/chatbot/chatbot'
-import LayoutWithoutFooter from './pages/layout-without-footer'
 
+import { AuthProvider } from './context/AuthProvider'
+import RequireAuth from './pages/require-auth'
+import { Unauthorized } from './pages/unauthorized/unauthorized'
+import { DataTableProvider } from './context/DataTableProvider'
+import Clients from './pages/clients/clients'
+import RoomTypes from './pages/roomtypes/roomtypes'
+import Hotels from './pages/hotels/hotels'
 
 function App() {
-
   return (
     <>
       <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path='/about' element={<About />} />
-            <Route path='/rooms' element={<Rooms />} />
-            <Route path='/payments' element={<Payment />} />
-            <Route path='/reservations' element={<Reservations />} />
-          </Route>
-          <Route element={<LayoutWithoutFooter />}>
-          <Route path='/chatbot' element={<Chatbot />} />
-        </Route>
-        <Route element={<LayoutWithoutNavbar />}>
-            <Route path='/sign-in' element={<SignIn />} />
-            <Route path='/sign-up' element={<SignUp />} />
-          </Route>
-        </Routes>
+        <AuthProvider>
+          <DataTableProvider>
+            <Routes>
+              <Route element={<Layout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/rooms" element={<Rooms />} />
+                <Route path="/payments" element={<Payment />} />
+                <Route path="/chatbot" element={<Chatbot />} />
+                <Route path="/unauthorized" element={<Unauthorized />} />
+                <Route element={<RequireAuth allowedRoles={["Employee", "Admin"]} />}>
+                  <Route path='/reservations' element={<Reservations />} />
+                  <Route path='/clients' element={<Clients />} />
+                  <Route path='/hotels' element={<Hotels />} />
+                  <Route path='/roomtypes' element={<RoomTypes />} />
+                </Route>
+              </Route>
+              <Route element={<LayoutWithoutNavbar />}>
+                <Route path='/sign-in' element={<SignIn />} />
+                <Route path='/sign-up' element={<SignUp />} />
+              </Route>
+            </Routes>
+          </DataTableProvider>
+        </AuthProvider>
       </BrowserRouter>
     </>
   )

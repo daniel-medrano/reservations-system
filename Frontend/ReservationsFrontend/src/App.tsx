@@ -18,6 +18,9 @@ import { AuthProvider } from './context/AuthProvider'
 import RequireAuth from './pages/require-auth'
 import { Unauthorized } from './pages/unauthorized/unauthorized'
 import { DataTableProvider } from './context/DataTableProvider'
+import Clients from './pages/clients/clients'
+import RoomTypes from './pages/roomtypes/roomtypes'
+import Hotels from './pages/hotels/hotels'
 
 function App() {
   return (
@@ -35,6 +38,9 @@ function App() {
                 <Route path="/unauthorized" element={<Unauthorized />} />
                 <Route element={<RequireAuth allowedRoles={["Employee", "Admin"]} />}>
                   <Route path='/reservations' element={<Reservations />} />
+                  <Route path='/clients' element={<Clients />} />
+                  <Route path='/hotels' element={<Hotels />} />
+                  <Route path='/roomtypes' element={<RoomTypes />} />
                 </Route>
               </Route>
               <Route element={<LayoutWithoutNavbar />}>

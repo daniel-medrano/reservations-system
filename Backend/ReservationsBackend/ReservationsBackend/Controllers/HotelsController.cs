@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReservationsBackend.Data;
+using ReservationsBackend.DTOs;
 using ReservationsBackend.Models;
 
 namespace ReservationsBackend.Controllers
@@ -22,9 +23,8 @@ namespace ReservationsBackend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Client>>> GetAllHotels(string query = "", string sortBy = "", int page = 1, int pageSize = 10)
+        public async Task<ActionResult<HotelsResponseDTO>> GetAllHotels(string query = "", string sortBy = "", int page = 1, int pageSize = 10)
         {
-
             var result = _context.Hotels
                 .Where(hotel =>
                     hotel.Name.Contains(query));
@@ -38,32 +38,30 @@ namespace ReservationsBackend.Controllers
                     result = result.OrderByDescending(hotel => hotel.Name);
                     break;
                 default:
-                    result = result.OrderBy(client => client.Id);
+                    result = result.OrderBy(hotel => hotel.Id);
                     break;
             }
 
             result = result.Skip((page - 1) * pageSize).Take(pageSize);
-            var clients = await result.ToListAsync();
-            return Ok(result);
+            var hotels = await result.ToListAsync();
+
+            var response = new HotelsResponseDTO
+            {
+                Hotels = hotels,
+                TotalCount = _context.Hotels.Count()
+            };
+            return Ok(response);
 
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Hotel>> GetSingleHotel(int id)
         {
-            if (_context.Hotels == null)
-            {
-                return NotFound();
-            }
             var hotel = await _context.Hotels
-                .Include(hotel => hotel.Name)
-                .Include(hotel => hotel.Description)
-                .Include(hotel => hotel.Address)
-                .Include(hotel => hotel.PostalCode)
                 .FirstOrDefaultAsync(hotel => hotel.Id == id);
 
             if (hotel is null)
-            return NotFound("Hotel not found. ");
+                return NotFound("Hotel not found.");
             return Ok(hotel);
         }
 
@@ -72,13 +70,14 @@ namespace ReservationsBackend.Controllers
         {
 
             var hotel = await _context.Hotels
-                .Include(Hotel => Hotel.Description)
-                .Include(Hotel => Hotel.Address)
-                .Include(Hotel => Hotel.Name)
                 .FirstOrDefaultAsync(h => h.Id == updatedHotel.Id);
             if (hotel is null)
                 return NotFound("Hotel not found.");
+            hotel.Name = updatedHotel.Name;
+            hotel.Description = updatedHotel.Description;
+            hotel.Address = updatedHotel.Address;
             hotel.Phone = updatedHotel.Phone;
+            hotel.Email = updatedHotel.Email;
             hotel.Status = updatedHotel.Status;
             await _context.SaveChangesAsync();
             return Ok(hotel);
@@ -99,11 +98,10 @@ namespace ReservationsBackend.Controllers
         {
             var hotel = await _context.Hotels.FindAsync(id);
             if (hotel == null)
-
                 return NotFound("Hotel not found. ");
             _context.Hotels.Remove(hotel);
             await _context.SaveChangesAsync();
-            return NoContent();
+            return Ok();
         }
 
         private bool HotelExists(int id)

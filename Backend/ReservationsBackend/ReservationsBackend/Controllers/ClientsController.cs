@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ReservationsBackend.DTOs;
 using System.Drawing.Printing;
 
 namespace ReservationsBackend.Controllers
@@ -18,10 +19,11 @@ namespace ReservationsBackend.Controllers
 
        [HttpGet]
         
-       public async Task<ActionResult<List<Client>>> GetAllClients(string query = "", string sortBy= "", int page = 1, int pageSize = 10) 
+       public async Task<ActionResult<ClientsResponseDTO>> GetAllClients(string query = "", string sortBy= "", int page = 1, int pageSize = 10) 
        {
 
-            var result = _context.Clients.Include(client => client.User)
+            var result = _context.Clients
+                .Include(client => client.User)
                 .Where(client =>
                     client.FirstName.Contains(query) ||
                     client.LastName.Contains(query));
@@ -40,8 +42,24 @@ namespace ReservationsBackend.Controllers
             }
 
             result = result.Skip((page - 1) * pageSize).Take(pageSize);
-            var clients = await result.ToListAsync();
-            return Ok(result);
+            var clients = await result
+                .Select(client => new ClientDTO
+                {
+                    Id = client.Id,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                    Phone = client.Phone,
+                    CreationDate = client.CreationDate,
+                    Email = client.User!.Email
+                })
+                .ToListAsync();
+
+            var response = new ClientsResponseDTO
+            {
+                Clients = clients,
+                TotalCount = clients.Count
+            };
+            return Ok(response);
 
         }
 

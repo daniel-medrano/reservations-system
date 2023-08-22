@@ -46,6 +46,24 @@ export function Nav() {
                         )}>
                             Reservations
                         </Link>}
+                        { auth?.user?.roles.find((role) => ["Employee", "Admin"].includes(role)) && <Link to="/clients" className={cn(
+                            "transition-colors hover:text-foreground/80",
+                            location.pathname === "/clients" ? "text-foreground" : "text-foreground/60"
+                        )}>
+                            Clients
+                        </Link>}
+                        { auth?.user?.roles.find((role) => ["Employee", "Admin"].includes(role)) && <Link to="/hotels" className={cn(
+                            "transition-colors hover:text-foreground/80",
+                            location.pathname === "/hotels" ? "text-foreground" : "text-foreground/60"
+                        )}>
+                            Hotels
+                        </Link>}
+                        { auth?.user?.roles.find((role) => ["Employee", "Admin"].includes(role)) && <Link to="/roomtypes" className={cn(
+                            "transition-colors hover:text-foreground/80",
+                            location.pathname === "/roomtypes" ? "text-foreground" : "text-foreground/60"
+                        )}>
+                            Room Types
+                        </Link>}
                         <Link to="/about" className={cn(
                             "transition-colors hover:text-foreground/80",
                             location.pathname === "/about" ? "text-foreground" : "text-foreground/60"

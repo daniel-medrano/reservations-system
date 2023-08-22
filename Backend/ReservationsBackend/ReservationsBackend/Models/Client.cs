@@ -7,8 +7,7 @@
         public required string LastName { get; set; }
         public int Phone { get; set; }
         public DateTime CreationDate { get; set; }
-        public string? Email { get; set; }//check if is important
         public int UserId { get; set; }
-        public required User User { get; set; }
+        public User? User { get; set; }
     }
 }

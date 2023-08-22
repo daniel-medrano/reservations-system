@@ -10,7 +10,7 @@
         public int Phone { get; set; }
         public required string Email { get; set; }
         public bool Status { get; set; }
-        public required List<Reservation> Reservations { get; set; }
+        public required List<Reservation>? Reservations { get; set; }
 
     }
 }

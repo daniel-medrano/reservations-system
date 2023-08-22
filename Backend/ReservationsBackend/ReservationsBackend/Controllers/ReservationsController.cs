@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query;
+using ReservationsBackend.DTOs;
 using ReservationsBackend.Models;
 
 namespace ReservationsBackend.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
     [ApiController]
     public class ReservationsController : ControllerBase
@@ -15,13 +19,14 @@ namespace ReservationsBackend.Controllers
             _context = context;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Reservation>>> GetAllReservations(string query="", string sortBy="", int page=1, int pageSize=10)
+        public async Task<ActionResult<ReservationsResponseDTO>> GetAllReservations(string query="", string sortBy="", int pageIndex=1, int pageSize=10)
         { 
             // Searching
             var result = _context.Reservations
                 .Include(reservation => reservation.Hotel)
                 .Include(reservation => reservation.Client)
                 .Include(reservation => reservation.Room)
+                .ThenInclude(room => room.RoomType)
                 .Where(reservation =>
                     reservation.Room!.RoomType.Name.Contains(query) ||
                     reservation.Room!.Number.ToString().Contains(query));
@@ -42,10 +47,17 @@ namespace ReservationsBackend.Controllers
                     break;
             }
             // Offset pagination.
-            result = result.Skip((page - 1) * pageSize).Take(pageSize);
+            result = result.Skip((pageIndex - 1) * pageSize).Take(pageSize);
 
             var reservations = await result.ToListAsync();
-            return Ok(reservations);
+
+            var response = new ReservationsResponseDTO
+            {
+                Reservations = reservations,
+                TotalCount = _context.Reservations.Count()
+            };
+
+            return Ok(response);
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<Reservation>> GetSingleReservation(int id)
@@ -60,14 +72,27 @@ namespace ReservationsBackend.Controllers
             return Ok(reservation);
         }
         [HttpPost]
-        public async Task<ActionResult<List<Reservation>>> CreateReservation(Reservation reservation)
+        public async Task<ActionResult<Reservation>> CreateReservation(ReservationDTO reservationRequest)
         {
-            _context.Reservations.Add(reservation);
+            // TODO: Find available rooms according to room type.
+            var newReservation = new Reservation
+            {
+                CheckOutDate = reservationRequest.CheckOutDate,
+                CheckInDate = reservationRequest.CheckInDate,
+                AmountAdults = reservationRequest.AmountAdults,
+                AmountChildren = reservationRequest.AmountChildren,
+                Notes = reservationRequest?.Notes,
+                Status = reservationRequest.Status,
+                HotelId = reservationRequest.HotelId,
+                ClientId = reservationRequest.ClientId,
+                RoomId = 1
+            };
+           _context.Reservations.Add(newReservation);
             await _context.SaveChangesAsync();
-            return Ok(reservation);
+            return Ok(newReservation);
         }
         [HttpPut]
-        public async Task<ActionResult<List<Reservation>>> UpdateReservation(Reservation updatedReservation)
+        public async Task<ActionResult<List<Reservation>>> UpdateReservation(ReservationDTO updatedReservation)
         {
             var reservation = await _context.Reservations
                 .Include(reservation => reservation.Hotel)
@@ -82,6 +107,8 @@ namespace ReservationsBackend.Controllers
             reservation.AmountChildren = updatedReservation.AmountChildren;
             reservation.Notes = updatedReservation.Notes;
             reservation.Status = updatedReservation.Status;
+            reservation.ClientId = updatedReservation.ClientId;
+            reservation.HotelId = updatedReservation.HotelId;
             await _context.SaveChangesAsync();
             return Ok(reservation);
         }

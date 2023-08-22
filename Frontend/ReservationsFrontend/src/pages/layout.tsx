@@ -6,10 +6,9 @@ export default function Layout() {
   return (
     <>
       <Nav />
-      <div className='container relative min-h-screen'>
+      <div className='container relative'>
         <Outlet />
       </div>
-      <Footer />
     </>
   );
 };

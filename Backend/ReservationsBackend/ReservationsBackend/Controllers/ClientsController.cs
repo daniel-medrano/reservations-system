@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ReservationsBackend.DTOs;
 using System.Drawing.Printing;
 
 namespace ReservationsBackend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class ClientsController : ControllerBase
     {
@@ -18,12 +19,14 @@ namespace ReservationsBackend.Controllers
 
        [HttpGet]
         
-       public async Task<ActionResult<List<Client>>> GetAllClients(string query = "", string sortBy= "", int page = 1, int pageSize = 10) 
+       public async Task<ActionResult<ClientsResponseDTO>> GetAllClients(string query = "", string sortBy= "", int page = 1, int pageSize = 10) 
        {
 
             var result = _context.Clients
+                .Include(client => client.User)
                 .Where(client =>
-                    client.Id.ToString().Contains(query));
+                    client.FirstName.Contains(query) ||
+                    client.LastName.Contains(query));
 
             switch (sortBy)
             {
@@ -39,8 +42,24 @@ namespace ReservationsBackend.Controllers
             }
 
             result = result.Skip((page - 1) * pageSize).Take(pageSize);
-            var clients = await result.ToListAsync();
-            return Ok(result);
+            var clients = await result
+                .Select(client => new ClientDTO
+                {
+                    Id = client.Id,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                    Phone = client.Phone,
+                    CreationDate = client.CreationDate,
+                    Email = client.User!.Email
+                })
+                .ToListAsync();
+
+            var response = new ClientsResponseDTO
+            {
+                Clients = clients,
+                TotalCount = clients.Count
+            };
+            return Ok(response);
 
         }
 
@@ -54,7 +73,6 @@ namespace ReservationsBackend.Controllers
             var clients = await _context.Clients
                 .Include(clients => clients.FirstName)
                 .Include(clients => clients.LastName)
-                .Include(clients => clients.Email)
                 .Include(clients => clients.Phone)
 
                 .FirstOrDefaultAsync(client => client.Id == id);
@@ -84,7 +102,6 @@ namespace ReservationsBackend.Controllers
             if (client is null)
                 return NotFound("Client not found");
             client.Phone = updatedClient.Phone;
-            client.Email = updatedClient.Email;
             await _context.SaveChangesAsync();
             return Ok(client);
         }

@@ -30,6 +30,9 @@ namespace ReservationsBackend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -46,8 +49,7 @@ namespace ReservationsBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Clients");
                 });
@@ -194,6 +196,27 @@ namespace ReservationsBackend.Migrations
                     b.ToTable("Reviews");
                 });
 
+            modelBuilder.Entity("ReservationsBackend.Models.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
             modelBuilder.Entity("ReservationsBackend.Models.Room", b =>
                 {
                     b.Property<int>("Id")
@@ -201,6 +224,9 @@ namespace ReservationsBackend.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Number")
                         .HasColumnType("int");
@@ -260,9 +286,13 @@ namespace ReservationsBackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
+                    b.Property<byte[]>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
@@ -272,11 +302,26 @@ namespace ReservationsBackend.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("RoleUser", b =>
+                {
+                    b.Property<int>("RolesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RolesId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("RoleUser");
+                });
+
             modelBuilder.Entity("ReservationsBackend.Models.Client", b =>
                 {
                     b.HasOne("ReservationsBackend.Models.User", "User")
-                        .WithOne("Client")
-                        .HasForeignKey("ReservationsBackend.Models.Client", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -340,6 +385,21 @@ namespace ReservationsBackend.Migrations
                     b.Navigation("RoomType");
                 });
 
+            modelBuilder.Entity("RoleUser", b =>
+                {
+                    b.HasOne("ReservationsBackend.Models.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RolesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ReservationsBackend.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ReservationsBackend.Models.Hotel", b =>
                 {
                     b.Navigation("Reservations");
@@ -353,12 +413,6 @@ namespace ReservationsBackend.Migrations
             modelBuilder.Entity("ReservationsBackend.Models.RoomType", b =>
                 {
                     b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("ReservationsBackend.Models.User", b =>
-                {
-                    b.Navigation("Client")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

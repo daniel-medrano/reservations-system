@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public DateTime CheckOutDate { get; set; }
         public DateTime CheckInDate { get; set; }
-        public DateTime CreationDate { get; set; }
+        public DateTime CreationDate { get; set; } = DateTime.UtcNow;
         public int AmountAdults { get; set; }
         public int AmountChildren { get; set; }
         public string? Notes { get; set; }

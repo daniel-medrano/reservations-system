@@ -72,7 +72,6 @@ export function Home (){
         className="rounded-md"
         />
     </div>
-
     </>
     )
 }

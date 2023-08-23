@@ -51,3 +51,18 @@ export interface Client {
     phone: number
     creationDate: Date
 }
+
+export interface ClientResponse {
+    clients: Client[]
+    totalCount: number
+}
+
+export interface HotelResponse {
+    hotels: Hotel[]
+    totalCount: number
+}
+
+export interface RoomTypeResponse {
+    roomTypes: RoomType[]
+    totalCount: number
+}

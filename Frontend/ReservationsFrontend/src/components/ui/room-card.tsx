@@ -1,9 +1,14 @@
 import r1 from "@/assets/rooms/r1.jpg"
 import { DatePickerWithRange } from "@/components/date-picker-range"
 import { Button } from "@/components/ui/button"
+import { RoomType } from "@/interfaces/interfaces"
 import { Link } from 'react-router-dom'
 
-const RoomCard = () => {
+interface RoomCardProps {
+    roomType: RoomType
+}
+
+const RoomCard = ({ roomType }: RoomCardProps) => {
     return (   
         <div className="p-4 bg-white rounded-lg shadow-lg">
             <div className="p-2 grid grid-cols-4"> 
@@ -16,12 +21,9 @@ const RoomCard = () => {
                 </div>
 
                 <div className="col-span-2 flex flex-col justify-start ">
-                    <h2 className="pl-4 text-xl font-semibold ">Suite</h2>
+                    <h2 className="pl-4 text-xl font-semibold ">{roomType.name}</h2>
                     <p className="pl-4 text-gray-500 text-start "> 
-                        Welcome to the epitome of luxury and relaxation at our Tropical Paradise Suite. 
-                        Nestled within the lush landscapes of Costa Rica, this suite offers an exquisite 
-                        blend of modern comfort and the natural beauty of the tropics.
-
+                        {roomType.description}
                     </p>
                 </div>
 

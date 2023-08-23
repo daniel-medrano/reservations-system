@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ReservationsBackend.DTOs;
 
 namespace ReservationsBackend.Models
 {
@@ -17,7 +18,7 @@ namespace ReservationsBackend.Models
 
 
         [HttpGet]
-        public async Task<ActionResult<List<RoomType>>> GetAllRoomTypes(string query = "", string sortBy = "", int page = 1, int pageSize = 10)
+        public async Task<ActionResult<RoomTypesResponseDTO>> GetAllRoomTypes(string query = "", string sortBy = "", int page = 1, int pageSize = 10)
         {
 
             var result = _context.RoomTypes 
@@ -38,8 +39,14 @@ namespace ReservationsBackend.Models
             }
 
             result = result.Skip((page - 1) * pageSize).Take(pageSize);
-            var room_type = await result.ToListAsync();
-            return Ok(result);
+            var roomTypes = await result.ToListAsync();
+
+            var response = new RoomTypesResponseDTO
+            {
+                RoomTypes = roomTypes,
+                TotalCount = _context.RoomTypes.Count()
+            };
+            return Ok(response);
 
         }
 

@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 
 import { DetailsDialog } from "./details-dialog"
-import { Client, Hotel, Reservation } from "@/interfaces/interfaces"
+import { Client, Hotel, Reservation, Room, RoomType } from "@/interfaces/interfaces"
 
-export const columns: ColumnDef<Client>[] = [
+export const columns: ColumnDef<RoomType>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -20,38 +20,30 @@ export const columns: ColumnDef<Client>[] = [
         enableHiding: false
     },
     {
-        accessorKey: "lastName",
+        accessorKey: "name",
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-                    Last name
+                    Name
                     <ArrowUpDown className="ml-2 h-4 w-4"/>
                 </Button>
             )
         }
     },
     {
-        accessorKey: "firstName",
+        accessorKey: "description",
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-                    First name
+                    Description
                     <ArrowUpDown className="ml-2 h-4 w-4"/>
                 </Button>
             )
         }
     },
     {
-        accessorKey: "phone",
-        header: "Phone"
-    },
-    {
-        accessorKey: "email",
-        header: "Email"
-    },
-    {
-        accessorKey: "creationDate",
-        header: "Created at"
+        accessorKey: "price",
+        header: "Price"
     },
     {
         accessorKey: "status",
@@ -64,7 +56,7 @@ export const columns: ColumnDef<Client>[] = [
     {
         id: "actions",
         cell: ({ row }) => {
-            const hotel = row.original
+            const roomType = row.original
 
             return (
                 <div></div>

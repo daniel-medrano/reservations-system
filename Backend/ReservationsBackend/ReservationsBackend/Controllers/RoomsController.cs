@@ -1,25 +1,27 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ReservationsBackend.DTOs;
 
 namespace ReservationsBackend.Models
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
-    public class RoomController : ControllerBase
+    public class RoomsController : ControllerBase
     {
         private readonly DataContext _context;
 
-        public RoomController(DataContext context)
+        public RoomsController(DataContext context)
         {
             _context = context;
         }
 
         [HttpGet]  
-        public async Task<ActionResult<List<Room>>> GetAllRooms(string query = "", string sortBy = "", int page = 1, int pageSize = 10)
+        public async Task<ActionResult<RoomsResponseDTO>> GetAllRooms(string query = "", string sortBy = "", int page = 1, int pageSize = 10)
         {
 
             var result = _context.Rooms
+                .Include(room => room.RoomType)
                 .Where(room =>
                     room.Id.ToString().Contains(query));
 
@@ -38,7 +40,13 @@ namespace ReservationsBackend.Models
 
             result = result.Skip((page - 1) * pageSize).Take(pageSize);
             var rooms = await result.ToListAsync();
-            return Ok(result);
+
+            var response = new RoomsResponseDTO
+            {
+                Rooms = rooms,
+                TotalCount = _context.Rooms.Count()
+            };
+            return Ok(response);
 
         }
 

@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 
 import { DetailsDialog } from "./details-dialog"
-import { Client, Hotel, Reservation } from "@/interfaces/interfaces"
+import { Client, Hotel, Reservation, Room } from "@/interfaces/interfaces"
 
-export const columns: ColumnDef<Client>[] = [
+export const columns: ColumnDef<Room>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -20,34 +20,19 @@ export const columns: ColumnDef<Client>[] = [
         enableHiding: false
     },
     {
-        accessorKey: "lastName",
+        accessorKey: "number",
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-                    Last name
+                    Number
                     <ArrowUpDown className="ml-2 h-4 w-4"/>
                 </Button>
             )
         }
     },
     {
-        accessorKey: "firstName",
-        header: ({ column }) => {
-            return (
-                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-                    First name
-                    <ArrowUpDown className="ml-2 h-4 w-4"/>
-                </Button>
-            )
-        }
-    },
-    {
-        accessorKey: "phone",
-        header: "Phone"
-    },
-    {
-        accessorKey: "email",
-        header: "Email"
+        accessorKey: "roomType.name",
+        header: "Room type"
     },
     {
         accessorKey: "creationDate",

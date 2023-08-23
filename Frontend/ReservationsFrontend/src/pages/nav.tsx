@@ -34,11 +34,11 @@ export function Nav() {
                         )}>
                             Chatbot
                         </Link>
-                        <Link to="/rooms" className={cn(
+                        <Link to="/available-roomtypes" className={cn(
                             "transition-colors hover:text-foreground/80",
-                            location.pathname === "/rooms" ? "text-foreground" : "text-foreground/60"
+                            location.pathname === "/available-roomtypes" ? "text-foreground" : "text-foreground/60"
                         )}>
-                            Rooms
+                            Available room types
                         </Link>
                         { auth?.user?.roles.find((role) => ["Employee", "Admin"].includes(role)) && <Link to="/reservations" className={cn(
                             "transition-colors hover:text-foreground/80",
@@ -58,11 +58,17 @@ export function Nav() {
                         )}>
                             Hotels
                         </Link>}
+                        { auth?.user?.roles.find((role) => ["Employee", "Admin"].includes(role)) && <Link to="/rooms" className={cn(
+                            "transition-colors hover:text-foreground/80",
+                            location.pathname === "/rooms" ? "text-foreground" : "text-foreground/60"
+                        )}>
+                            Rooms
+                        </Link>}
                         { auth?.user?.roles.find((role) => ["Employee", "Admin"].includes(role)) && <Link to="/roomtypes" className={cn(
                             "transition-colors hover:text-foreground/80",
                             location.pathname === "/roomtypes" ? "text-foreground" : "text-foreground/60"
                         )}>
-                            Room Types
+                            Room types
                         </Link>}
                         <Link to="/about" className={cn(
                             "transition-colors hover:text-foreground/80",

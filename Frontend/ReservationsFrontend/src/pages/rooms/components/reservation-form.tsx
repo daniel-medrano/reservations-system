@@ -1,5 +1,5 @@
 import { ReactNode, useContext, useState } from "react"
-import { Reservation, Hotel, RoomType, Client, HotelResponse, RoomTypeResponse, ClientResponse } from "@/interfaces/interfaces"
+import { Reservation, Hotel, RoomType, Client } from "@/interfaces/interfaces"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Minus, Plus, Calendar as CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
@@ -89,31 +89,31 @@ function updateReservation(reservation: ReservationRequest, token: string) {
         .catch((error) => console.log(error))
 }
 
-function getHotels(handleHotelsData: (data: HotelResponse) => void) {
+function getHotels(handleHotelsData: (data: Hotel[]) => void) {
     const url = baseUrl + "/hotels"
     fetch(url, {
         method: "GET"
     })
         .then((response) => response.json())
-        .then((data: HotelResponse) => handleHotelsData(data))
+        .then((data: Hotel[]) => handleHotelsData(data))
 }
 
-function getRoomTypes(handleRoomTypesData: (data: RoomTypeResponse) => void) {
+function getRoomTypes(handleRoomTypesData: (data: RoomType[]) => void) {
     const url = baseUrl + "/roomtypes"
     fetch(url, {
         method: "GET"
     })
         .then((response) => response.json())
-        .then((data: RoomTypeResponse) => handleRoomTypesData(data))
+        .then((data: RoomType[]) => handleRoomTypesData(data))
 }
 
-function getClients(handleRoomTypesData: (data: ClientResponse) => void) {
+function getClients(handleRoomTypesData: (data: Client[]) => void) {
     const url = baseUrl + "/clients"
     fetch(url, {
         method: "GET"
     })
         .then((response) => response.json())
-        .then((data: ClientResponse) => handleRoomTypesData(data))
+        .then((data: Client[]) => handleRoomTypesData(data))
 }
 
 const formSchema = z.object({
@@ -215,7 +215,7 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                                                 aria-expanded={openHotels}
                                                 className="w-[280px] justify-between"
                                                 disabled={disabled}
-                                                onClick={() => getHotels((data) => setHotels(data.hotels))}
+                                                onClick={() => getHotels((data) => setHotels(data))}
                                             >
                                                 {field.value
                                                     ? hotels?.find((hotel) => hotel.id == field.value)?.name ?? reservation?.hotel.name
@@ -277,7 +277,7 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                                                 aria-expanded={openRoomTypes}
                                                 className="w-[280px] justify-between"
                                                 disabled={disabled}
-                                                onClick={() => getRoomTypes((data) => setRoomTypes(data.roomTypes))}
+                                                onClick={() => getRoomTypes((data) => setRoomTypes(data))}
                                             >
                                                 {field.value
                                                     ? roomTypes?.find((roomType) => roomType.id == field.value)?.name ?? reservation?.room.roomType.name
@@ -337,7 +337,7 @@ export function ReservationForm({ reservation, button, disabled }: ReservationFo
                                                 aria-expanded={openClients}
                                                 className="w-[280px] justify-between"
                                                 disabled={disabled}
-                                                onClick={() => getClients((data) => setClients(data.clients))}
+                                                onClick={() => getClients((data) => setClients(data))}
                                             >
                                                 {field.value
                                                     ? clients?.find((client) => client.id == field.value)?.lastName ?? reservation?.client.lastName

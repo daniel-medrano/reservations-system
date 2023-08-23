@@ -57,7 +57,7 @@ namespace ReservationsBackend.Controllers
             var response = new ClientsResponseDTO
             {
                 Clients = clients,
-                TotalCount = clients.Count
+                TotalCount = _context.Clients.Count()
             };
             return Ok(response);
 

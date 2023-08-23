@@ -22,6 +22,7 @@ import Clients from './pages/clients/clients'
 import RoomTypes from './pages/roomtypes/roomtypes'
 import Hotels from './pages/hotels/hotels'
 import Rooms from './pages/rooms/rooms'
+import Dashboard from './pages/dashboard/dashboard'
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
                 <Route path="/chatbot" element={<Chatbot />} />
                 <Route path="/unauthorized" element={<Unauthorized />} />
                 <Route element={<RequireAuth allowedRoles={["Employee", "Admin"]} />}>
+                  <Route path='/dashboard' element={<Dashboard />} />
                   <Route path='/reservations' element={<Reservations />} />
                   <Route path='/clients' element={<Clients />} />
                   <Route path='/hotels' element={<Hotels />} />

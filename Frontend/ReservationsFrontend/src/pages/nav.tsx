@@ -34,12 +34,18 @@ export function Nav() {
                         )}>
                             Chatbot
                         </Link>
-                        <Link to="/available-roomtypes" className={cn(
+                        { auth?.user?.roles.find((role) => ["Client"].includes(role)) && <Link to="/available-roomtypes" className={cn(
                             "transition-colors hover:text-foreground/80",
                             location.pathname === "/available-roomtypes" ? "text-foreground" : "text-foreground/60"
                         )}>
                             Available room types
-                        </Link>
+                        </Link>}
+                        { auth?.user?.roles.find((role) => ["Employee", "Admin"].includes(role)) && <Link to="/dashboard" className={cn(
+                            "transition-colors hover:text-foreground/80",
+                            location.pathname === "/dashboard" ? "text-foreground" : "text-foreground/60"
+                        )}>
+                            Dashboard
+                        </Link>}
                         { auth?.user?.roles.find((role) => ["Employee", "Admin"].includes(role)) && <Link to="/reservations" className={cn(
                             "transition-colors hover:text-foreground/80",
                             location.pathname === "/reservations" ? "text-foreground" : "text-foreground/60"
